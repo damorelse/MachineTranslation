@@ -71,6 +71,7 @@
                 "Sorte": ["kind"],
                 "tot": ["dead"],
                 "Information": ["information"],
+                "Informationen": ["information"],
                 "verkaufen": ["sell"],
                 "verkauft": ["sell"],
                 "Auftrag": ["task", "job"],
