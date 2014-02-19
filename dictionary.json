@@ -93,6 +93,7 @@
                 "aber": ["but", "yet"],
                 "noch": ["else", "still", "yet"],
                 "machten": ["did", "made"],
+                "machte": ["did", "made"],
                 "Botengang": ["errand"],
                 "nein": ["no"],
                 "ihn": ["him"],
