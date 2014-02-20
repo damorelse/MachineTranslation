@@ -1,7 +1,7 @@
 {
     "words":
             {
-                "waren": ["was"],
+                "waren": ["were"],
                 "war": ["was"],
                 "gewesen": ["was"],
                 "sein": ["be", "his", "its"],
@@ -29,7 +29,7 @@
                 "mir": ["me", "myself"],
                 "gegenüber": ["opposite", "face to face with", "across from"],
                 "in": ["at", "in", "into", "on"],
-                "grell": ["crude", "dazzling", "flamboyant", "flashy", "garish", "gaudy", "glaring", "glaringly", "harsh", "loud", "lurid", "outrageous", "screaming", "shrill", "violent", "loud"],
+                "grell": ["crude", "dazzling", "flamboyant", "flashy", "garish", "gaudy", "glaring", "glaringly", "harsh", "loud", "lurid", "outrageous", "screaming", "shrill", "violent"],
                 "kariert": ["checked", "checkered", "plaid"],
                 "karierten": ["checked", "checkered", "plaid"],
                 "Sakko": ["jacket", "sports coat"],
