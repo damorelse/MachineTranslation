@@ -10,15 +10,17 @@ def main():
 
     engSent = []
     for line in sentences["dev"]:
-            for p in dictionary["phrases"]:
-                    line.replace(" "+p+" ", " "+dictionary["phrases"][p]+" ")
-            line = re.sub('[,.]+', '', line)
-            words = line.split(" ")
-            output = []
-            for w in words:
-                output.append(lookup(dictionary, w))
+        for p in dictionary["phrases"]:
+            line = line.replace(" "+p+" ", " "+dictionary["phrases"][p]+" ")
 
-            engSent.append(output)
+        line = re.sub('[,.]+', '', line)
+        words = line.split(" ")
+        output = []
+
+        for w in words:
+            output.append(lookup(dictionary, w))
+
+        engSent.append(output)
 
 
     print engSent
