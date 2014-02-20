@@ -74,6 +74,7 @@
                 "Informationen": ["information"],
                 "verkaufen": ["sell"],
                 "verkauft": ["sell"],
+                "verkaufte": ["sold"],
                 "Auftrag": ["task", "job"],
                 "Aufträge": ["errands"],
                 "ausführen": ["perform"],
