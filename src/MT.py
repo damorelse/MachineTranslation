@@ -1,41 +1,40 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 
-#import codecs
+import codecs
 import json
 import re
 import sys
 
-class MT:
-    COMPOUND_PREPOSITIONS = {
-        u'ans': [u'an', u'das'],
-        u'am': [u'an', u'dem'],
-        u'aufs': [u'auf', u'das'],
-        u'beim': [u'bei', u'dem'],
-        u'durchs': [u'durch', u'das'],
-        u'fürs': [u'für', u'das'],
-        u'hinterm': [u'hinter', u'dem'],
-        u'hinters': [u'hinter', u'das'],
-        u'ins': [u'in', u'das'],
-        u'übers': [u'über', u'das'],
-        u'ums': [u'um', u'das'],
-        u'unters': [u'unter', u'das'],
-        u'vom': [u'von', u'dem'],
-        u'vors': [u'vor', u'das'],
-        u'zum': [u'zu', u'dem'],
-        u'zum': [u'zu', u'dem']
-    }
+NONWORD = unicode(r'[^A-ZÄÖÜa-zäöüß-]+', encoding='utf8')
 
+COMPOUND_PREPOSITIONS = {
+    u'ans': [u'an', u'das'],
+    u'am': [u'an', u'dem'],
+    u'aufs': [u'auf', u'das'],
+    u'beim': [u'bei', u'dem'],
+    u'durchs': [u'durch', u'das'],
+    u'fürs': [u'für', u'das'],
+    u'hinterm': [u'hinter', u'dem'],
+    u'hinters': [u'hinter', u'das'],
+    u'ins': [u'in', u'das'],
+    u'übers': [u'über', u'das'],
+    u'ums': [u'um', u'das'],
+    u'unters': [u'unter', u'das'],
+    u'vom': [u'von', u'dem'],
+    u'vors': [u'vor', u'das'],
+    u'zum': [u'zu', u'dem'],
+    u'zum': [u'zu', u'dem']
+}
+
+class MT:
     def __init__(self, file):
-        with open(file) as f:
-            self.dictionary = json.load(f)
-#        with codecs.open(file, encoding='utf8') as f:
-#            self.dictionary = json.load(f, encoding='utf8')
+        self.dictionary = self.read_json(file)
         
     def translate(self, file):
         engSent = []
         
-        sentences = self.read_sentences(file)
+        sentences = self.read_json(file)
 
         for line in sentences["dev"]:
             words = self.split_line(line)
@@ -55,11 +54,9 @@ class MT:
         return engSent
     
     @staticmethod
-    def read_sentences(file):
-        with open(file) as f:
-            sentences = json.load(f)
-#        with codecs.open(file, encoding='utf8') as f:
-#            sentences = json.load(f, encoding='utf8')
+    def read_json(file):
+        with codecs.open(file, encoding='utf8') as f:
+            sentences = json.load(f, encoding='utf8')
             
         return sentences
     
@@ -67,7 +64,7 @@ class MT:
     def split_line(line):
         words = []
         
-        for word in re.split(r'[,.!?:;@#$%^&*()\[\]{}<>/\\+=\'" \t]+', line):
+        for word in re.split(NONWORD, line):
             if len(word) > 0:
                 words.append(word)
         
@@ -151,8 +148,8 @@ class MT:
     def split_preposition(self, preposition):
         split = []
         
-        if preposition in self.COMPOUND_PREPOSITIONS:
-            split.extend(self.COMPOUND_PREPOSITIONS[preposition])
+        if preposition in COMPOUND_PREPOSITIONS:
+            split.extend(COMPOUND_PREPOSITIONS[preposition])
         else:
             split.append(preposition)
             
