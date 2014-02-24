@@ -13,10 +13,9 @@ class MT:
         sentences = json.load(json_data)
         
         for line in sentences["dev"]:
-            line = self.interpolate_phrases(line)
+#            line = self.interpolate_phrases(line)
 
-            line = re.sub('[,.]+', '', line)
-            words = line.split(" ")
+            words = self.split_compounds(re.split("[^A-Za-z0-9-]+", line))
             output = []
 
             for w in words:
@@ -35,41 +34,44 @@ class MT:
     def lookup(self, word):
         translation = word
 
-        if word in self.dictionary["words"]:
-            translation = self.dictionary["words"][word][0]
-        elif word.lower() in self.dictionary["words"]:
-            translation = self.dictionary["words"][word.lower()][0]
-        else:
-            compound = self.compound_lookup(self.dictionary["words"], word)
-
-            if compound:
-                translation = compound
+        if word in self.dictionary['words']:
+            translation = self.dictionary['words'][word][0]
+        elif word.lower() in self.dictionary['words']:
+            translation = self.dictionary['words'][word.lower()][0]
 
         return translation
 
-    def compound_lookup(self, dictionary, word):
-        translation = None
+    def split_compounds(self, words):
+        split = []
+        
+        for word in words:
+            if word in self.dictionary['words']:
+                split.append(word)
+            else:
+                split.extend(self.compound_split(word))
+                
+        return split
+                
+    def compound_split(self, word):
+        words = []
         i = len(word)
 
         while i > 0:
-            if word[:i] in dictionary:
-                rest = None
-
+            if word[:i] in self.dictionary['words']:
                 if i < len(word):
-                    rest = self.compound_lookup(dictionary, word[i].upper() + word[i+1:])
+                    rest = self.compound_split(word[i].upper() + word[i+1:])
 
                     if rest:
-                        translation = dictionary[word[0:i]][0] + ' ' + rest
+                        words.append(word[0:i])
+                        words.extend(rest)
                         break
                 else:
-                    translation = dictionary[word[0:i]][0]
+                    words.append(word[0:i])
                     break
-    #        else:
-    #            print "%s not in dict" % word[:i]
 
             i -= 1
 
-        return translation
+        return words
 
 def main():
     mt = MT('%s/dictionary.json' % sys.argv[1])
