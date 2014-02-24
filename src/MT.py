@@ -152,7 +152,7 @@ class MT:
         split = []
         
         if preposition in self.COMPOUND_PREPOSITIONS:
-            split.extend(COMPOUND_PREPOSITIONS[preposition])
+            split.extend(self.COMPOUND_PREPOSITIONS[preposition])
         else:
             split.append(preposition)
             
