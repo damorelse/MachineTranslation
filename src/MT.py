@@ -64,10 +64,6 @@ class MT:
                 output = []
 
                 for w in words:
-                    # Remove the curly braces from idioms
-                    if re.match('{(.*)}', w):
-                        w = w[1:-1]
-
                     output.append(self.lookup(w))
 
                 # send sentence to permutationTester (limit to 9 words)
@@ -231,10 +227,10 @@ class MT:
             
             for i in range(len(new) - 1):
                 for j in range(len(new), i + 1, -1):
-                    phrase = ' '.join(new[i:j])
+                    phrase = ' '.join([x.split('_')[0] for x in new[i:j]])
                     
                     if phrase in self.dictionary['phrases']:
-                        new = new[:i] + ['{' + self.dictionary['phrases'][phrase] + '}'] + new[j:]
+                        new = new[:i] + ['{' + self.dictionary['phrases'][phrase] + '}_PHRASE'] + new[j:]
                         changed = True
                         break
                         
@@ -249,10 +245,14 @@ class MT:
         translation = word
         parts = word.split('_')
 
-        if parts[0] in self.dictionary['words']:
-            translation = self.dictionary['words'][parts[0]][0]
-        elif parts[0].lower() in self.dictionary['words']:
-            translation = self.dictionary['words'][parts[0].lower()][0]
+        if parts[1] == 'PHRASE':
+            # Strip braces and tag
+            translation = word[1:-8]
+        else:
+            if parts[0] in self.dictionary['words']:
+                translation = self.dictionary['words'][parts[0]][0]
+            elif parts[0].lower() in self.dictionary['words']:
+                translation = self.dictionary['words'][parts[0].lower()][0]
 
         return translation
 
