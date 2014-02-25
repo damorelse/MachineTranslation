@@ -58,6 +58,7 @@ class MT:
             phrases = self.split_line(line)
             
             for words in phrases:
+                words = self.reorder_dependent_clause(words)
                 words = self.interpolate_phrases(words)
                 words = self.split_compounds(words)
                 output = []
@@ -78,6 +79,115 @@ class MT:
         return engSent
   
     
+    def reorder_dependent_clause(self, words):
+        
+        
+        pairs = [x.split('_') for x in words]
+        
+        if re.match('V[VAM]FIN', pairs[-1][-1]):
+            """
+            Find where to put it.  Look for a pair of noun phrases or articles
+            or prepositions and put it between them.  Note that we can't cross a
+            conjuction, though.
+            """ 
+            first = -1
+            second = -1
+            conjunction = -1
+            
+            # First we assume that articles do not substitute for nouns
+            for i, pair in enumerate(pairs[:-1]):
+                if pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
+                    pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
+                    if first < 0:
+                        first = i
+                    elif second < 0:
+                        second = i
+                    else:
+                        print "Three subjects/objects in " + str(words)
+                        break
+                elif pair[-1] == 'KON':
+                    first = -1
+                    second = -1
+                    conjunction = i
+                    
+            if first >= 0 and second < 0:
+                first = -1
+                conjunction = -1
+                first_is_article = False
+                second_is_article = False
+                
+                # An article may be substituting for the second noun.  Try again
+                for i, pair in enumerate(pairs[:-1]):
+                    if pair[-1] == 'ART' or pair[-1] == 'CARD':
+                        if first < 0:
+                            first = i
+                            first_is_article = True
+                        elif second < 0:
+                            second = i
+                            second_is_article = True
+                        else:
+                            print "Three subjects/objects in " + str(words)
+                            break
+                    elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
+                        pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
+                        if second < 0 and (first < 0 or first_is_article):
+                            first = i
+                            first_is_article = False
+                        elif second < 0 or second_is_article:
+                            second = i
+                            second_is_article = False
+                        else:
+                            print "Three subjects/objects in " + str(words)
+                            break
+                    elif pair[-1] == 'KON':
+                        first = -1
+                        second = -1
+                        conjunction = i
+                        
+                if second < 0:
+                    # Nope. Maybe an article is subbing for the first noun.  Try again.
+                    first = -1
+                    conjunction = -1
+                    first_is_article = False
+
+                    # An article may be substituting for the second noun.  Try again
+                    for i, pair in enumerate(pairs[:-1]):
+                        if pair[-1] == 'ART' or pair[-1] == 'CARD':
+                            if first < 0:
+                                first = i
+                            elif second < 0:
+                                second = i
+                                second_is_article = True
+                            else:
+                                print "Three subjects/objects in " + str(words)
+                                break
+                        elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
+                            pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
+                            if first < 0:
+                                first = i
+                            elif second < 0 or second_is_article:
+                                second = i
+                                second_is_article = False
+                            else:
+                                print "Three subjects/objects in " + str(words)
+                                break
+                        elif pair[-1] == 'KON':
+                            first = -1
+                            second = -1
+                            conjunction = i
+
+            if first < 0 and conjunction < 0:
+                # Move the verb into the first position
+                words = words[-1:] + words[:-1]
+            if first < 0:
+                # Move the verb into the first position
+                words = words[:conjunction + 1] + words[-1:] + words[conjunction + 1:-1]
+            else:
+                words = words[:first + 1] + words[-1:] + words[first + 1:-1]
+                
+        return words
+        
+        
     @staticmethod
     def read_json(file):
 
