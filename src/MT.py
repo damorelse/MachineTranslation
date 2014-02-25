@@ -9,6 +9,8 @@ import os.path
 import itertools
 from nltk.stem.snowball import SnowballStemmer
 from germanPOStagger import POStagger
+# here is a reference for the tags:
+# http://www.coli.uni-saarland.de/projects/sfb378/negra-corpus/stts.asc
 from LanguageModel import LanguageModel
 
 
