@@ -55,24 +55,25 @@ class MT:
         dev = self.tagger.tag(sentences['dev'])
 
         for line in dev:
-            words = self.split_line(line)
-            words = self.interpolate_phrases(words)
-            words = self.split_compounds(words)
-            print words
-            output = []
-
-            for w in words:
-                # Remove the curly braces from idioms
-                if re.match('{(.*)}', w):
-                    w = w[1:-1]
-                    
-                output.append(self.lookup(w))
-
-            # send sentence to permutationTester (limit to 9 words)
-#            if len(output) < 9:
-#                output = self.permutationTester(output)    
+            phrases = self.split_line(line)
             
-            engSent.append(output)
+            for words in phrases:
+                words = self.interpolate_phrases(words)
+                words = self.split_compounds(words)
+                output = []
+
+                for w in words:
+                    # Remove the curly braces from idioms
+                    if re.match('{(.*)}', w):
+                        w = w[1:-1]
+
+                    output.append(self.lookup(w))
+
+                # send sentence to permutationTester (limit to 9 words)
+    #            if len(output) < 9:
+    #                output = self.permutationTester(output)    
+
+                engSent.append(output)
         
         return engSent
   
@@ -89,12 +90,20 @@ class MT:
     @staticmethod
     def split_line(line):
   
-        words = []      
-        for word in re.split(NONWORD, line):
-            if len(word) > 0:
+        phrases = []
+        words = []  
+        
+        for word in re.findall(r'[^\s]+_(?:[A-Z]+|\$[.,(])', line):
+            if len(word) > 0 and word[-2] == '$':
+                phrases.append(words)
+                words = []
+            elif len(word) > 0:
                 words.append(word)
         
-        return words
+        if len(words) > 0:
+            phrases.append(words)
+        
+        return phrases
 
 
     """
@@ -144,12 +153,15 @@ class MT:
         for word in words:
             parts = word.split('_')
             
-            if parts[0] in self.dictionary['words']:
+            if parts[0] not in self.dictionary['words'] and parts[0].lower() not in self.dictionary['words']:
+                if parts[1] == 'NN':
+                    split.extend(self.split_noun(parts[0], parts[1]))
+                elif parts[1] == 'APPRART':
+                    split.extend(self.split_preposition(parts[0], parts[1]))
+                else:
+                    split.append(word)
+            else:
                 split.append(word)
-            elif re.match('NN.*', parts[1]):
-                split.extend(self.split_noun(parts[0], parts[1]))
-            elif parts[1] == 'APPRART':
-                split.extend(self.split_preposition(parts[0], parts[1]))
                  
         return split
               
