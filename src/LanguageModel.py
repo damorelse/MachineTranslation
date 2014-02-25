@@ -1,4 +1,5 @@
-import math, collections
+import math
+import collections
 
 class LanguageModel:
 

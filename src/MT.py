@@ -15,25 +15,25 @@ from LanguageModel import LanguageModel
 
 
 
-NONWORD = unicode(r'[^A-ZÄÖÜa-zäöüß-]+', encoding='utf8')
+NONWORD = unicode(r'[^A-ZÄÖÜa-zäöüß_-]+', encoding='utf8')
 
 COMPOUND_PREPOSITIONS = {
-    u'ans': [u'an', u'das'],
-    u'am': [u'an', u'dem'],
-    u'aufs': [u'auf', u'das'],
-    u'beim': [u'bei', u'dem'],
-    u'durchs': [u'durch', u'das'],
-    u'fürs': [u'für', u'das'],
-    u'hinterm': [u'hinter', u'dem'],
-    u'hinters': [u'hinter', u'das'],
-    u'ins': [u'in', u'das'],
-    u'übers': [u'über', u'das'],
-    u'ums': [u'um', u'das'],
-    u'unters': [u'unter', u'das'],
-    u'vom': [u'von', u'dem'],
-    u'vors': [u'vor', u'das'],
-    u'zum': [u'zu', u'dem'],
-    u'zum': [u'zu', u'dem']
+    u'ans': [u'an_APPR', u'das_ART'],
+    u'am': [u'an_APPR', u'dem_ART'],
+    u'aufs': [u'auf_APPR', u'das_ART'],
+    u'beim': [u'bei_APPR', u'dem_ART'],
+    u'durchs': [u'durch_APPR', u'das_ART'],
+    u'fürs': [u'für_APPR', u'das_ART'],
+    u'hinterm': [u'hinter_APPR', u'dem_ART'],
+    u'hinters': [u'hinter_APPR', u'das_ART'],
+    u'ins': [u'in_APPR', u'das_ART'],
+    u'übers': [u'über_APPR', u'das_ART'],
+    u'ums': [u'um_APPR', u'das_ART'],
+    u'unters': [u'unter_APPR', u'das_ART'],
+    u'vom': [u'von_APPR', u'dem_ART'],
+    u'vors': [u'vor_APPR', u'das_ART'],
+    u'zum': [u'zu_APPR', u'dem_ART'],
+    u'zur': [u'zu_APPR', u'der_ART']
 }
 
 
@@ -52,12 +52,13 @@ class MT:
         
         engSent = []        
         sentences = self.read_json(file)
+        dev = self.tagger.tag(sentences['dev'])
 
-        for line in sentences["dev"]:
-            
+        for line in dev:
             words = self.split_line(line)
             words = self.interpolate_phrases(words)
             words = self.split_compounds(words)
+            print words
             output = []
 
             for w in words:
@@ -68,8 +69,8 @@ class MT:
                 output.append(self.lookup(w))
 
             # send sentence to permutationTester (limit to 9 words)
-            if len(output) < 9:
-                output = self.permutationTester(output)    
+#            if len(output) < 9:
+#                output = self.permutationTester(output)    
             
             engSent.append(output)
         
@@ -127,11 +128,12 @@ class MT:
     def lookup(self, word):
         
         translation = word
+        parts = word.split('_')
 
-        if word in self.dictionary['words']:
-            translation = self.dictionary['words'][word][0]
-        elif word.lower() in self.dictionary['words']:
-            translation = self.dictionary['words'][word.lower()][0]
+        if parts[0] in self.dictionary['words']:
+            translation = self.dictionary['words'][parts[0]][0]
+        elif parts[0].lower() in self.dictionary['words']:
+            translation = self.dictionary['words'][parts[0].lower()][0]
 
         return translation
 
@@ -140,19 +142,19 @@ class MT:
         
         split = []
         for word in words:
-            parts = word.split('/')
+            parts = word.split('_')
             
             if parts[0] in self.dictionary['words']:
-                split.append(parts[0])
-            elif len(parts) == 1 or re.match('NN.*', parts[1]):
-                split.extend(self.split_noun(parts[0]))
-            elif parts[1] == 'IN':
-                split.extend(self.split_preposition(parts[0]))
+                split.append(word)
+            elif re.match('NN.*', parts[1]):
+                split.extend(self.split_noun(parts[0], parts[1]))
+            elif parts[1] == 'APPRART':
+                split.extend(self.split_preposition(parts[0], parts[1]))
                  
         return split
               
                 
-    def split_noun(self, word):
+    def split_noun(self, word, tag):
  
         words = []
         i = len(word)
@@ -160,32 +162,32 @@ class MT:
         while i > 0:
             if word[:i] in self.dictionary['words']:
                 if i < len(word):
-                    rest = self.split_noun(word[i].upper() + word[i+1:])
+                    rest = self.split_noun(word[i].upper() + word[i+1:], tag)
 
                     if rest:
-                        words.append(word[0:i])
+                        words.append(word[0:i] + '_' + tag)
                         words.extend(rest)
                         break
                 else:
-                    words.append(word[0:i])
+                    words.append(word[0:i] + '_' + tag)
                     break
 
             i -= 1
 
         if not words:
-            words.append(word)
+            words.append(word + '_' + tag)
             
         return words
     
     
-    def split_preposition(self, preposition):
+    def split_preposition(self, preposition, tag):
  
         split = []
         
         if preposition in COMPOUND_PREPOSITIONS:
             split.extend(COMPOUND_PREPOSITIONS[preposition])
         else:
-            split.append(preposition)
+            split.append(preposition + '_' + tag)
             
         return split
         
@@ -193,10 +195,10 @@ class MT:
     def trainLM(self):
         
         # open clean text and join all lines
-        text = ''.join(open(os.path.dirname(__file__) + '../data/AnitaBlake01GuiltyPleasures.clean.txt').read()) 
+        text = ''.join(open(os.path.dirname(__file__) + '/../data/AnitaBlake01GuiltyPleasures.clean.txt').read()) 
         
         # sentencify text
-        sentences = re.split(r' *[\.\?!][\'"\)\]]* *', text)
+        sentences = re.split(r' *[.?!][\'")\]]* *[(\["]*', text)
         
         # cut out the first 15 proper sentences - dev and test
         sentences = sentences[17:]
