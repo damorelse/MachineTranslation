@@ -1,10 +1,17 @@
-#!/usr/bin/python
+ #!/usr/bin/python
 # -*- coding: utf8 -*-
 
 import codecs
 import json
 import re
 import sys
+import os.path
+import itertools
+from nltk.stem.snowball import SnowballStemmer
+from germanPOStagger import POStagger
+from LanguageModel import LanguageModel
+
+
 
 NONWORD = unicode(r'[^A-ZÄÖÜa-zäöüß-]+', encoding='utf8')
 
@@ -27,16 +34,25 @@ COMPOUND_PREPOSITIONS = {
     u'zum': [u'zu', u'dem']
 }
 
+
 class MT:
+
+  
     def __init__(self, file):
+        
         self.dictionary = self.read_json(file)
+        self.stemmer = SnowballStemmer("german") 
+        self.tagger = POStagger() 
+        self.trainLM()
+        
         
     def translate(self, file):
-        engSent = []
         
+        engSent = []        
         sentences = self.read_json(file)
 
         for line in sentences["dev"]:
+            
             words = self.split_line(line)
             words = self.interpolate_phrases(words)
             words = self.split_compounds(words)
@@ -49,26 +65,34 @@ class MT:
                     
                 output.append(self.lookup(w))
 
+            # send sentence to permutationTester (limit to 9 words)
+            if len(output) < 9:
+                output = self.permutationTester(output)    
+            
             engSent.append(output)
         
         return engSent
+  
     
     @staticmethod
     def read_json(file):
+
         with codecs.open(file, encoding='utf8') as f:
             sentences = json.load(f, encoding='utf8')
             
         return sentences
+   
     
     @staticmethod
     def split_line(line):
-        words = []
-        
+  
+        words = []      
         for word in re.split(NONWORD, line):
             if len(word) > 0:
                 words.append(word)
         
         return words
+
 
     """
     Find phrases in the source sentence and replace them with idiomatic
@@ -76,6 +100,7 @@ class MT:
     them from accidentally being retranslated later.
     """
     def interpolate_phrases(self, words):
+ 
         new = words
         changed = True
         
@@ -96,7 +121,9 @@ class MT:
             
         return new
     
+    
     def lookup(self, word):
+        
         translation = word
 
         if word in self.dictionary['words']:
@@ -106,9 +133,10 @@ class MT:
 
         return translation
 
+
     def split_compounds(self, words):
-        split = []
         
+        split = []
         for word in words:
             parts = word.split('/')
             
@@ -118,10 +146,12 @@ class MT:
                 split.extend(self.split_noun(parts[0]))
             elif parts[1] == 'IN':
                 split.extend(self.split_preposition(parts[0]))
-                
+                 
         return split
+              
                 
     def split_noun(self, word):
+ 
         words = []
         i = len(word)
 
@@ -145,7 +175,9 @@ class MT:
             
         return words
     
+    
     def split_preposition(self, preposition):
+ 
         split = []
         
         if preposition in COMPOUND_PREPOSITIONS:
@@ -154,6 +186,45 @@ class MT:
             split.append(preposition)
             
         return split
+        
+        
+    def trainLM(self):
+        
+        # open clean text and join all lines
+        text = ''.join(open(os.path.dirname(__file__) + '../data/AnitaBlake01GuiltyPleasures.clean.txt').read()) 
+        
+        # sentencify text
+        sentences = re.split(r' *[\.\?!][\'"\)\]]* *', text)
+        
+        # cut out the first 15 proper sentences - dev and test
+        sentences = sentences[17:]
+
+        # wordify the sentences
+        for i, sentence in enumerate(sentences):
+            sentences[i] = re.findall(r"[\w']+|[.,!?;]", sentence)
+        
+        # train LM on corpus
+        self.LM = LanguageModel(sentences)
+        
+       
+    def permutationTester(self, sentence):
+        
+        # generate all order permutations of words in the sentence  
+        orig = sentence        
+        sentences = list(itertools.permutations(orig, len(orig)))
+
+        # score each sentence and pick the best
+        max = [self.LM.score(orig), orig]
+        for sentence in sentences:
+            
+            score = self.LM.score(sentence)
+            if score > max[0]:
+                max = [score, sentence]
+              
+        print "\n Best Sentence:"      
+        print max      
+        return max[1]   
+        
     
 def main():
     mt = MT('%s/dictionary.json' % sys.argv[1])
