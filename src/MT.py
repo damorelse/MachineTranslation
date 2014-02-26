@@ -337,7 +337,7 @@ class MT:
         
     def recombineParticiples(self, words):
  
-        # find clause ends with VVPP, VAPP, or VMPP
+        # find clause that ends with VVPP, VAPP, or VMPP
         new_words = words
         check = ["VVPP", "VAPP", "VMPP"]
         for c in check:
@@ -347,7 +347,7 @@ class MT:
                 for i, word in enumerate(words[:-1]):
                     if "VA" in word:
                 
-                        # move the last word into pos after prec. VA*
+                        # move last word into pos after prec. VA*
                         new_words = words[:i+1]
                         new_words.append(words[-1])
                         new_words.extend(words[i+1:-1])
@@ -356,25 +356,24 @@ class MT:
         return new_words
        
             
-    ''' I must be doing something wrong here because this isn't making any changes.. '''        
+    ''' We must have some error because PTKVZ never occurs in our dev set.. '''        
     def recombineSepPrefixes(self, words):
         
         # find clause ends with PTKVZ
         new_words = words
-        if "PKTVZ" in words[-1]:
+        if "PTKVZ" in words[-1]:
+                
+                print words[-1]
                 
                 # find the preceding VVFIN
                 for i, word in enumerate(words[:-1]):
                     if "VVFIN" in word:
-                
-                        # move the last word into pos after prec. VVFIN
-                        new_words = words[:i+1]
+            
+                        # move the last word into pos before prec. VVFIN
+                        new_words = words[:i-1]
                         new_words.append(words[-1])
-                        new_words.extend(words[i+1:-1])
-                        
-                        print ("\n")
-                        print (words)
-                        print (new_words)
+                        new_words.extend(words[i-1:-1])
+
                         break
         
         
@@ -394,10 +393,11 @@ class MT:
                         for j, wurd in enumerate(words[:i]):
                             if "VV" in wurd: 
 
-                                # move the ADV into pos after prec. VV*
-                                new_words = words[:j+1]
+                                # move the ADV into before prec. VV*
+                                new_words = words[:j-1]
                                 new_words.append(words[i])
-                                new_words.extend(words[j+1:-1])                        
+                                new_words.extend(words[j-1:i])
+                                new_words.extend(words[i+1:])
                                 break
                         break            
 
