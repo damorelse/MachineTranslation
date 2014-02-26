@@ -55,9 +55,9 @@ class MT:
         dev = self.tagger.tag(sentences['dev'])
 
         for line in dev:
-            phrases = self.split_line(line)
+            clauses = self.split_line(line)
             
-            for words in phrases:
+            for words in clauses:
                 words = self.reorder_dependent_clause(words)
                 words = self.interpolate_phrases(words)
                 words = self.split_compounds(words)
@@ -76,7 +76,6 @@ class MT:
   
     
     def reorder_dependent_clause(self, words):
-        
         
         pairs = [x.split('_') for x in words]
         
