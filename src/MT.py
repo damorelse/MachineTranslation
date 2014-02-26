@@ -69,7 +69,6 @@ class MT:
 
                 for w in words:
                     LL.append(self.lookup(w))
-            print LL
             output = [[]]
             for wordList in LL:
                 numPrefix = len(output)
@@ -86,7 +85,7 @@ class MT:
             bestScore = float("-inf")
             index = 0
             for i, sent in enumerate(output):
-                currScore = self.score(sent)
+                currScore = self.LM.score(sent)
                 if currScore > bestScore:
                     bestScore = currScore
                     index = i
@@ -440,7 +439,7 @@ class MT:
         print ("\n Best Sentence:")
         print (max)
         return (max[1])
-
+    '''
     def score(self, sentence):
         score = 0.0 
         toks = ['', '', '']
@@ -457,8 +456,22 @@ class MT:
                     score += self.ngrams["unigram_probabilities"][toks[2]]
                 else:
                     score += 0.0 #UNK?
-                    #print curr
+        toks.append("")
+        toks.pop(0)
+        if " ".join(toks[:3]) in self.ngrams["trigram_probabilities"]:
+            score += self.ngrams["trigram_probabilities"][" ".join(toks[:3])]
+        elif " ".join(toks[1:3]) in self.ngrams["bigram_probabilities"]:
+            score += self.ngrams["bigram_probabilities"][" ".join(toks[1:3])]
+        else:
+            score += 0.0 #UNK?
+        toks.append("")
+        toks.pop(0)
+        if " ".join(toks[:3]) in self.ngrams["trigram_probabilities"]:
+            score += self.ngrams["trigram_probabilities"][" ".join(toks[:3])]
+        else:
+            score += 0.0 #UNK?
         return score
+    '''
     
 def main():
     mt = MT('%s/dictionary.json' % sys.argv[1], '%s/ngrams.json' % sys.argv[1])

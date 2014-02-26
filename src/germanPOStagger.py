@@ -43,7 +43,6 @@ class POStagger:
         
         file = self.write_temp_file(sentences)
         tagged = [unicode(x, encoding='utf8') for x in self.tagit(file)]
-        print tagged
         #os.unlink(file) #GINA: issues in windows
         return tagged
     

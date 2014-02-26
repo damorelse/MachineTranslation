@@ -1,0 +1,64 @@
+C:\Users\Gina\Documents\GitHub\MachineTranslation>C:\Python27\python.exe src\MT.
+py data
+[u'Willie_NN McCoy_NE war_VAFIN schon_ADV vor_APPR seinem_PPOSAT Tod_NN ein_ART
+Bl\xf6dmann_NN gewesen_VAPP ._$.', u'Dass_KOUS er_PPER nun_ADV tot_ADJD war_VAFI
+N ,_$, \xe4nderte_VVFIN daran_PROAV nichts_PIS ._$.', u'Er_PPER sa\xdf_VVFIN mir
+_PPER gegen\xfcber_APPR in_APPR einem_ART grell_ADJD karierten_ADJA Sakko_NN ._$
+.', u'Seine_PPOSAT Polyesterhosen_NN war_VAFIN hellgr\xfcn_VVIZU ._$.', u'Das_AR
+T kurze_ADJA schwarze_ADJA Haar_NN hatte_VAFIN er_PPER sich_PRF aus_APPR dem_ART
+ d\xfcnnen_ADJA dreieckigen_ADJA Gesicht_NN nach_APPR hinten_ADV geklatscht_VVPP
+ ._$.', u'Er_PPER hatte_VAFIN mich_PPER schon_ADV immer_ADV ein_ART wenig_PIS an
+_APPR eine_ART Gestalt_NN aus_APPR einem_ART Gangsterfilm_NN erinnert_VVPP ._$.'
+, u'Die_ART Sorte_NN ,_$, die_ART Informationen_NN verkauft_VVFIN ,_$, Auftr\xe4
+ge_NN ausf\xfchrt_VVPP und_KON entbehrlich_ADJD ist_VAFIN ._$.', u'Jetzt_ADV ,_$
+, wo_PWAV Willie_NN ein_ART Vampir_NN war_VAFIN ,_$, war_VAFIN die_ART Sache_NN
+mit_APPR der_ART Entbehrlichkeit_NN nat\xfcrlich_ADV nicht_PTKNEG mehr_ADV von_A
+PPR Bedeutung_NN ._$.', u'Aber_KON er_PPER verkaufte_VVFIN noch_ADV immer_ADV In
+formationen_NN und_KON machte_VVFIN Boteng\xe4nge_NN ._$.', u'Nein_PTKANT ,_$, d
+er_ART Tod_NN hatte_VAFIN ihn_PPER nicht_PTKNEG besonders_ADV ver\xe4ndert_VVPP
+._$.']
+[u'Willie_NN McCoy_NE war_VAFIN schon_ADV vor_APPR seinem_PPOSAT Tod_NN ein_ART
+Bl\xf6dmann_NN gewesen_VAPP ._$.', u'Dass_KOUS er_PPER nun_ADV tot_ADJD war_VAFI
+N ,_$, \xe4nderte_VVFIN daran_PROAV nichts_PIS ._$.', u'Er_PPER sa\xdf_VVFIN mir
+_PPER gegen\xfcber_APPR in_APPR einem_ART grell_ADJD karierten_ADJA Sakko_NN ._$
+.', u'Seine_PPOSAT Polyesterhosen_NN war_VAFIN hellgr\xfcn_VVIZU ._$.', u'Das_AR
+T kurze_ADJA schwarze_ADJA Haar_NN hatte_VAFIN er_PPER sich_PRF aus_APPR dem_ART
+ d\xfcnnen_ADJA dreieckigen_ADJA Gesicht_NN nach_APPR hinten_ADV geklatscht_VVPP
+ ._$.', u'Er_PPER hatte_VAFIN mich_PPER schon_ADV immer_ADV ein_ART wenig_PIS an
+_APPR eine_ART Gestalt_NN aus_APPR einem_ART Gangsterfilm_NN erinnert_VVPP ._$.'
+, u'Die_ART Sorte_NN ,_$, die_ART Informationen_NN verkauft_VVFIN ,_$, Auftr\xe4
+ge_NN ausf\xfchrt_VVPP und_KON entbehrlich_ADJD ist_VAFIN ._$.', u'Jetzt_ADV ,_$
+, wo_PWAV Willie_NN ein_ART Vampir_NN war_VAFIN ,_$, war_VAFIN die_ART Sache_NN
+mit_APPR der_ART Entbehrlichkeit_NN nat\xfcrlich_ADV nicht_PTKNEG mehr_ADV von_A
+PPR Bedeutung_NN ._$.', u'Aber_KON er_PPER verkaufte_VVFIN noch_ADV immer_ADV In
+formationen_NN und_KON machte_VVFIN Boteng\xe4nge_NN ._$.', u'Nein_PTKANT ,_$, d
+er_ART Tod_NN hatte_VAFIN ihn_PPER nicht_PTKNEG besonders_ADV ver\xe4ndert_VVPP
+._$.']
+-323578.05287
+-323595.802586
+-431453.408284
+-431443.916532
+-647149.252187
+[u'always']
+-539316.63384
+-323571.967124
+-323610.806478
+[u'still']
+-215727.40129
+-539284.1361
+[[u'Willie', u'McCoy', u'was', u'was', u'already', u'forward', u'his', u'death',
+ u'on', u'buffoon'], [u'that', u'he', u'is', u'now', u'dead', u'changes', u'at i
+t', u'nothing'], [u'he', u'sat', u'me', u'across from', u'in', u'a', u'crude', u
+'checkered', u'jacket'], [u'his', u'polyester', u'pants', u'was', u'lime green']
+, [u'that', u'succinct', u'black', u'hair', u'back', u'had', u'applaud', u'he',
+u'oneself', u'over', u'the', u'light', u'triangular', u'face', u'toward'], [u'he
+', u'has', u'remembers', u'me', u'always', u'a', u'little', u'on', u'an', u'desi
+gn', u'out', u'an', u'gangster', u'movie'], [u'that', u'kind', u'the', u'sells',
+ u'information', u'errands', u'performs', u'and', u'was', u'expendable'], [u'cur
+rently', u'where', u'Willie', u'was', u'a', u'vampire', u'is', u'the', u'thing',
+ u'with', u'the', u'expendability', u'of course', u'not', u'more', u'of', u'sign
+ificance'], [u'but', u'he', u'sells', u'still', u'information', u'and', u'made',
+ u'errands'], [u'no', u'the', u'dissolution', u'especially', u'had', u'changes',
+ u'him', u'not']]
+
+C:\Users\Gina\Documents\GitHub\MachineTranslation>

@@ -10,30 +10,44 @@ class LanguageModel:
     self.bigramCounts = collections.defaultdict(lambda: 0)
     self.trigramCounts = collections.defaultdict(lambda: 0)
     self.total = 0
+    self.cont = {}
+    with open("data\contractions.txt") as f:
+      content = f.readlines()
+      for line in content:
+        line = line.rstrip()
+        self.cont[line[:line.find("\t")]] = line[line.find("\t")+1:]
     self.train(corpus)
-    
 
   def train(self, corpus):
       
     """ Takes a corpus and trains a language model. """  
     
-    prev_word = ""
-    prev2_word = ""
-    for sentence in corpus:  
-        
-      for word in sentence:      
+    
+    for sentence in corpus: 
+      toks = ['', '', ''] 
+      self.unigramCounts[toks[2]] =  self.unigramCounts[toks[2]] + 4
+      self.bigramCounts[" ".join(toks[1:3])] = self.bigramCounts[" ".join(toks[1:3])] + 2
+      for word in sentence:  
+          curr = [word]
+          if word in self.cont.keys():
+            curr = self.cont[word].split(" ")
+          toks.extend(curr)
+          for i in range(len(curr)):
+              toks.pop(0) 
+              self.unigramCounts[toks[2]] = self.unigramCounts[toks[2]] + 1
+              self.total += 1
+              self.bigramCounts[" ".join(toks[1:3])] = self.bigramCounts[" ".join(toks[1:3])] + 1
+              self.trigramCounts[" ".join(toks[:3])] = self.trigramCounts[" ".join(toks[:3])] + 1
+      toks.append("")
+      toks.pop(0)
+      self.bigramCounts[" ".join(toks[1:3])] = self.bigramCounts[" ".join(toks[1:3])] + 1
+      self.trigramCounts[" ".join(toks[:3])] = self.trigramCounts[" ".join(toks[:3])] + 1
+      toks.append("")
+      toks.pop(0)
+      self.trigramCounts[" ".join(toks[:3])] = self.trigramCounts[" ".join(toks[:3])] + 1
 
-        token = word
-        self.unigramCounts[token] = self.unigramCounts[token] + 1
-        self.total += 1
-        if prev_word != "":
-            self.bigramCounts[(prev_word, token)] = self.bigramCounts[(prev_word,token)] + 1
-        if prev2_word != "":
-            self.trigramCounts[(prev2_word, prev_word, token)] = self.trigramCounts[(prev2_word, prev_word, token)] + 1    
-        prev2_word = prev_word
-        prev_word = token
 
-
+  '''
   def score(self, sentence):
       
     """ Takes a list of strings as argument and returns the log-probability of the 
@@ -61,7 +75,44 @@ class LanguageModel:
               score -= math.log(self.total + V)   
                  
           prev2_word = prev_word
-          prev_word = token      
- 
+          prev_word = token 
     return score
-
+  '''
+  def score(self, sentence):
+    score = 0.0 
+    V = len(self.unigramCounts)
+    toks = ['', '', '']
+    for curr in sentence:
+        curr = curr.split(" ")
+        toks.extend(curr)
+        for i in range(len(curr)):
+            toks.pop(0)
+            if " ".join(toks[:3]) in self.trigramCounts:
+                score += math.log(self.trigramCounts[" ".join(toks[:3])])
+                score -= math.log(self.bigramCounts[" ".join(toks[1:3])])
+            elif " ".join(toks[1:3]) in self.bigramCounts:
+                score += math.log(self.bigramCounts[" ".join(toks[1:3])])
+                score -= math.log(self.unigramCounts[toks[2]])
+            elif toks[2] in self.unigramCounts:
+                score += math.log(self.unigramCounts[toks[2]] + 1)
+                score -= (self.total + V)
+            else:
+                score += 0.0 #UNK?
+    toks.append("")
+    toks.pop(0)
+    if " ".join(toks[:3]) in self.trigramCounts:
+        score += math.log(self.trigramCounts[" ".join(toks[:3])])
+        score -= math.log(self.bigramCounts[" ".join(toks[1:3])])
+    elif " ".join(toks[1:3]) in self.bigramCounts:
+       score += math.log(self.bigramCounts[" ".join(toks[1:3])])
+       score -= math.log(self.unigramCounts[toks[2]])
+    else:
+        score += 0.0 #UNK?
+    toks.append("")
+    toks.pop(0)
+    if " ".join(toks[:3]) in self.trigramCounts:
+      score += math.log(self.trigramCounts[" ".join(toks[:3])])
+      score -= math.log(self.bigramCounts[" ".join(toks[1:3])])
+    else:
+        score += 0.0 #UNK?
+    return score
