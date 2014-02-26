@@ -62,6 +62,8 @@ class MT:
                 words = self.interpolate_phrases(words)
                 words = self.split_compounds(words)
                 words = self.recombineParticiples(words)
+                words = self.recombineSepPrefixes(words)
+                words = self.reorderAdverbs(words)
                 output = []
 
                 for w in words:
@@ -314,21 +316,77 @@ class MT:
         return split
         
         
-    # follows dep clause
     def recombineParticiples(self, words):
-        print "\n"
-        print words
-        return words
-        # find clause ends with VVPP, VAPP, VMPP. move word to pos after prec. VA*
+ 
+        # find clause ends with VVPP, VAPP, or VMPP
+        new_words = words
+        check = ["VVPP", "VAPP", "VMPP"]
+        for c in check:
+            if c in words[-1]:
+                
+                # find the preceding VA*
+                for i, word in enumerate(words[:-1]):
+                    if "VA" in word:
+                
+                        # move the last word into pos after prec. VA*
+                        new_words = words[:i+1]
+                        new_words.append(words[-1])
+                        new_words.extend(words[i+1:-1])
+                        break
+        
+        return new_words
        
             
-    def recombineSepPrefixes(self):
-        pass
-        # find clause that ends with PTKVZ. move word to pos prec. VVFIN
+    ''' I must be doing something wrong here because this isn't making any changes.. '''        
+    def recombineSepPrefixes(self, words):
+        
+        # find clause ends with PTKVZ
+        new_words = words
+        if "PKTVZ" in words[-1]:
+                
+                # find the preceding VVFIN
+                for i, word in enumerate(words[:-1]):
+                    if "VVFIN" in word:
+                
+                        # move the last word into pos after prec. VVFIN
+                        new_words = words[:i+1]
+                        new_words.append(words[-1])
+                        new_words.extend(words[i+1:-1])
+                        
+                        print "\n"
+                        print words
+                        print new_words
+                        break
+        
+        
+        return new_words
+
             
-    def reorderAdverbs(self):   
-        pass
-        # find any ADV that follows any V* move to pos prec VV*
+    def reorderAdverbs(self, words):   
+        
+        print "\n"
+        print words
+        
+        # find any ADV that follows any V*
+        new_words = words
+        for i, word in enumerate(words):
+            if "ADV" in word:
+                for w in words[:i]:
+                    if "_V" in w:
+                            
+                        print w    
+                        # find the preceding VV*
+                        for j, wurd in enumerate(words[:i]):
+                            if "VV" in wurd: 
+
+                                # move the ADV into pos after prec. VV*
+                                new_words = words[:j+1]
+                                new_words.append(words[i])
+                                new_words.extend(words[j+1:-1])                        
+                                break
+                        break            
+
+        return new_words
         
         
     def trainLM(self):
