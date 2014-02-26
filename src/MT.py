@@ -6,6 +6,7 @@ import json
 import re
 import sys
 import os.path
+import copy
 import itertools
 from nltk.stem.snowball import SnowballStemmer
 from germanPOStagger import POStagger
@@ -40,9 +41,10 @@ COMPOUND_PREPOSITIONS = {
 class MT:
 
   
-    def __init__(self, file):
+    def __init__(self, file, ngrams):
         
         self.dictionary = self.read_json(file)
+        self.ngrams = self.read_json(ngrams)
         self.stemmer = SnowballStemmer("german") 
         self.tagger = POStagger() 
         self.trainLM()
@@ -52,11 +54,11 @@ class MT:
         
         engSent = []        
         sentences = self.read_json(file)
-        dev = self.tagger.tag(sentences['dev'])
-
+        dev = self.tagger.tag(sentences['dev']) 
+        print dev
         for line in dev:
             clauses = self.split_line(line)
-            
+            LL = []
             for words in clauses:
                 words = self.reorder_dependent_clause(words)
                 words = self.interpolate_phrases(words)
@@ -64,16 +66,33 @@ class MT:
                 words = self.recombineParticiples(words)
                 words = self.recombineSepPrefixes(words)
                 words = self.reorderAdverbs(words)
-                output = []
 
                 for w in words:
-                    output.append(self.lookup(w))
+                    LL.append(self.lookup(w))
+            print LL
+            output = [[]]
+            for wordList in LL:
+                numPrefix = len(output)
+                numWords = len(wordList)
+                if len(wordList) > 1:
+                    tmp = [None]*(numWords*numPrefix)
+                    for i in range(numWords):
+                        for k in range(numPrefix):
+                            tmp[i*numPrefix+k] = copy.copy(output[k])
+                    output = tmp
+                for i, word in enumerate(wordList):
+                    for itr in range(numPrefix):
+                        output[i*numPrefix+itr].append(word)
+            bestScore = float("-inf")
+            index = 0
+            for i, sent in enumerate(output):
+                currScore = self.score(sent)
+                if currScore > bestScore:
+                    bestScore = currScore
+                    index = i
+            print bestScore
+            engSent.append(output[index])
 
-                # send sentence to permutationTester (limit to 9 words)
-    #            if len(output) < 9:
-    #                output = self.permutationTester(output)    
-
-                engSent.append(output)
         
         return engSent
   
@@ -101,7 +120,7 @@ class MT:
                     elif second < 0:
                         second = i
                     else:
-                        print "Three subjects/objects in " + str(words)
+                        print ("Three subjects/objects in " + str(words))
                         break
                 elif pair[-1] == 'KON':
                     first = -1
@@ -124,7 +143,7 @@ class MT:
                             second = i
                             second_is_article = True
                         else:
-                            print "Three subjects/objects in " + str(words)
+                            print ("Three subjects/objects in " + str(words))
                             break
                     elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
                         pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
@@ -135,7 +154,7 @@ class MT:
                             second = i
                             second_is_article = False
                         else:
-                            print "Three subjects/objects in " + str(words)
+                            print ("Three subjects/objects in " + str(words))
                             break
                     elif pair[-1] == 'KON':
                         first = -1
@@ -157,7 +176,7 @@ class MT:
                                 second = i
                                 second_is_article = True
                             else:
-                                print "Three subjects/objects in " + str(words)
+                                print ("Three subjects/objects in " + str(words))
                                 break
                         elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
                             pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
@@ -167,7 +186,7 @@ class MT:
                                 second = i
                                 second_is_article = False
                             else:
-                                print "Three subjects/objects in " + str(words)
+                                print ("Three subjects/objects in " + str(words))
                                 break
                         elif pair[-1] == 'KON':
                             first = -1
@@ -244,17 +263,17 @@ class MT:
     
     def lookup(self, word):
         
-        translation = word
         parts = word.split('_')
-
+        translation = [parts[0]]
         if parts[1] == 'PHRASE':
             # Strip braces and tag
-            translation = word[1:-8]
+            translation = [word[1:-8]]
+            print translation
         else:
             if parts[0] in self.dictionary['words']:
-                translation = self.dictionary['words'][parts[0]][0]
+                translation = self.dictionary['words'][parts[0]]
             elif parts[0].lower() in self.dictionary['words']:
-                translation = self.dictionary['words'][parts[0].lower()][0]
+                translation = self.dictionary['words'][parts[0].lower()]
 
         return translation
 
@@ -353,9 +372,9 @@ class MT:
                         new_words.append(words[-1])
                         new_words.extend(words[i+1:-1])
                         
-                        print "\n"
-                        print words
-                        print new_words
+                        print ("\n")
+                        print (words)
+                        print (new_words)
                         break
         
         
@@ -418,14 +437,32 @@ class MT:
             if score > max[0]:
                 max = [score, sentence]
               
-        print "\n Best Sentence:"      
-        print max      
-        return max[1]   
-        
+        print ("\n Best Sentence:")
+        print (max)
+        return (max[1])
+
+    def score(self, sentence):
+        score = 0.0 
+        toks = ['', '', '']
+        for curr in sentence:
+            curr = curr.split(" ")
+            toks.extend(curr)
+            for i in range(len(curr)):
+                toks.pop(0)
+                if " ".join(toks[:3]) in self.ngrams["trigram_probabilities"]:
+                    score += self.ngrams["trigram_probabilities"][" ".join(toks[:3])]
+                elif " ".join(toks[1:3]) in self.ngrams["bigram_probabilities"]:
+                    score += self.ngrams["bigram_probabilities"][" ".join(toks[1:3])]
+                elif toks[2] in self.ngrams["unigram_probabilities"]:
+                    score += self.ngrams["unigram_probabilities"][toks[2]]
+                else:
+                    score += 0.0 #UNK?
+                    #print curr
+        return score
     
 def main():
-    mt = MT('%s/dictionary.json' % sys.argv[1])
-    print mt.translate('%s/sentences.json' % sys.argv[1])
+    mt = MT('%s/dictionary.json' % sys.argv[1], '%s/ngrams.json' % sys.argv[1])
+    print (mt.translate('%s/sentences.json' % sys.argv[1]))
 
 if __name__ == '__main__':
     main()

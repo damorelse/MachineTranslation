@@ -1,0 +1,104 @@
+C:\Users\Gina\Documents\GitHub\MachineTranslation>C:\Python27\python.exe src\MT.
+py data
+[u'Willie_NN McCoy_NE war_VAFIN schon_ADV vor_APPR seinem_PPOSAT Tod_NN ein_ART
+Bl\xf6dmann_NN gewesen_VAPP ._$.', u'Dass_KOUS er_PPER nun_ADV tot_ADJD war_VAFI
+N ,_$, \xe4nderte_VVFIN daran_PROAV nichts_PIS ._$.', u'Er_PPER sa\xdf_VVFIN mir
+_PPER gegen\xfcber_APPR in_APPR einem_ART grell_ADJD karierten_ADJA Sakko_NN ._$
+.', u'Seine_PPOSAT Polyesterhosen_NN war_VAFIN hellgr\xfcn_VVIZU ._$.', u'Das_AR
+T kurze_ADJA schwarze_ADJA Haar_NN hatte_VAFIN er_PPER sich_PRF aus_APPR dem_ART
+ d\xfcnnen_ADJA dreieckigen_ADJA Gesicht_NN nach_APPR hinten_ADV geklatscht_VVPP
+ ._$.', u'Er_PPER hatte_VAFIN mich_PPER schon_ADV immer_ADV ein_ART wenig_PIS an
+_APPR eine_ART Gestalt_NN aus_APPR einem_ART Gangsterfilm_NN erinnert_VVPP ._$.'
+, u'Die_ART Sorte_NN ,_$, die_ART Informationen_NN verkauft_VVFIN ,_$, Auftr\xe4
+ge_NN ausf\xfchrt_VVPP und_KON entbehrlich_ADJD ist_VAFIN ._$.', u'Jetzt_ADV ,_$
+, wo_PWAV Willie_NN ein_ART Vampir_NN war_VAFIN ,_$, war_VAFIN die_ART Sache_NN
+mit_APPR der_ART Entbehrlichkeit_NN nat\xfcrlich_ADV nicht_PTKNEG mehr_ADV von_A
+PPR Bedeutung_NN ._$.', u'Aber_KON er_PPER verkaufte_VVFIN noch_ADV immer_ADV In
+formationen_NN und_KON machte_VVFIN Boteng\xe4nge_NN ._$.', u'Nein_PTKANT ,_$, d
+er_ART Tod_NN hatte_VAFIN ihn_PPER nicht_PTKNEG besonders_ADV ver\xe4ndert_VVPP
+._$.']
+[u'Willie_NN McCoy_NE war_VAFIN schon_ADV vor_APPR seinem_PPOSAT Tod_NN ein_ART
+Bl\xf6dmann_NN gewesen_VAPP ._$.', u'Dass_KOUS er_PPER nun_ADV tot_ADJD war_VAFI
+N ,_$, \xe4nderte_VVFIN daran_PROAV nichts_PIS ._$.', u'Er_PPER sa\xdf_VVFIN mir
+_PPER gegen\xfcber_APPR in_APPR einem_ART grell_ADJD karierten_ADJA Sakko_NN ._$
+.', u'Seine_PPOSAT Polyesterhosen_NN war_VAFIN hellgr\xfcn_VVIZU ._$.', u'Das_AR
+T kurze_ADJA schwarze_ADJA Haar_NN hatte_VAFIN er_PPER sich_PRF aus_APPR dem_ART
+ d\xfcnnen_ADJA dreieckigen_ADJA Gesicht_NN nach_APPR hinten_ADV geklatscht_VVPP
+ ._$.', u'Er_PPER hatte_VAFIN mich_PPER schon_ADV immer_ADV ein_ART wenig_PIS an
+_APPR eine_ART Gestalt_NN aus_APPR einem_ART Gangsterfilm_NN erinnert_VVPP ._$.'
+, u'Die_ART Sorte_NN ,_$, die_ART Informationen_NN verkauft_VVFIN ,_$, Auftr\xe4
+ge_NN ausf\xfchrt_VVPP und_KON entbehrlich_ADJD ist_VAFIN ._$.', u'Jetzt_ADV ,_$
+, wo_PWAV Willie_NN ein_ART Vampir_NN war_VAFIN ,_$, war_VAFIN die_ART Sache_NN
+mit_APPR der_ART Entbehrlichkeit_NN nat\xfcrlich_ADV nicht_PTKNEG mehr_ADV von_A
+PPR Bedeutung_NN ._$.', u'Aber_KON er_PPER verkaufte_VVFIN noch_ADV immer_ADV In
+formationen_NN und_KON machte_VVFIN Boteng\xe4nge_NN ._$.', u'Nein_PTKANT ,_$, d
+er_ART Tod_NN hatte_VAFIN ihn_PPER nicht_PTKNEG besonders_ADV ver\xe4ndert_VVPP
+._$.']
+[[u'Willie'], [u'McCoy'], [u'is', u'am', u'are', u'was', u'were'], [u'is', u'am'
+, u'are', u'was', u'were'], [u'already', u'yet'], [u'forward', u'ahead'], [u'his
+', u'its'], [u'death', u'dissolution'], [u'a', u'an', u'on', u'any'], [u'buffoon
+', u'imbecile']]
+0.0543447171409
+[[u'that', u'unless'], [u'he'], [u'is', u'am', u'are', u'was', u'were'], [u'now'
+], [u'dead'], [u'change', u'changes', u'changed'], [u'at it'], [u'nothing']]
+0.0198475474811
+[[u'he'], [u'sit', u'sits', u'sat'], [u'me', u'myself'], [u'opposite', u'face to
+ face with', u'across from'], [u'at', u'in', u'into', u'on'], [u'a', u'an'], [u'
+crude', u'dazzling', u'flamboyant', u'flashy', u'garish', u'gaudy', u'glaring',
+u'glaringly', u'harsh', u'loud', u'lurid', u'outrageous', u'screaming', u'shrill
+', u'violent'], [u'checked', u'checkered', u'plaid'], [u'jacket', u'sports coat'
+]]
+0.0385969524818
+[[u'his', u'its'], [u'polyester'], [u'pants'], [u'is', u'am', u'are', u'was', u'
+were'], [u'lime green']]
+0.0285970155017
+[[u'that', u'this', u'the', u'which'], [u'short', u'quick', u'succinct'], [u'bla
+ck', u'illegal'], [u'hair'], [u'have', u'has', u'had'], [u'applaud', u'applauds'
+, u'applauded', u'clap', u'claps', u'clapped'], [u'back', u'behind', u'rear'], [
+u'he'], [u'each other', u'himself', u'herself', u'itself', u'oneself', u'themsel
+ves'], [u'off', u'out', u'over'], [u'that', u'this', u'the', u'which'], [u'thin'
+, u'fine', u'light'], [u'triangular'], [u'face', u'vision'], [u'after', u'for',
+u'past', u'to', u'according to', u'toward']]
+0.096863465238
+[u'always']
+[[u'he'], [u'have', u'has', u'had'], [u'remember', u'remembers', u'remembered',
+u'remind', u'reminds', u'reminded'], [u'me', u'myself'], [u'always'], [u'a', u'a
+n', u'on', u'any'], [u'little'], [u'on', u'about', u'by'], [u'a', u'an'], [u'sha
+pe', u'figure', u'design', u'likeness'], [u'off', u'out', u'over'], [u'a', u'an'
+], [u'gangster'], [u'movie', u'coat']]
+0.0660363444474
+[[u'that', u'this', u'the', u'which'], [u'kind'], [u'that', u'this', u'the', u'w
+hich'], [u'sell', u'sells', u'sold'], [u'information'], [u'errands'], [u'perform
+', u'performs', u'performed'], [u'and'], [u'is', u'am', u'are', u'was', u'were']
+, [u'expendable', u'unnecessary']]
+0.106849068426
+[[u'now', u'currently'], [u'where'], [u'Willie'], [u'is', u'am', u'are', u'was',
+ u'were'], [u'a', u'an', u'on', u'any'], [u'vampire'], [u'is', u'am', u'are', u'
+was', u'were'], [u'that', u'this', u'the', u'which'], [u'business', u'thing', u'
+concern'], [u'with'], [u'that', u'this', u'the', u'which'], [u'expendability'],
+[u'of course'], [u'not', u'no'], [u'more'], [u'by', u'of', u'from', u'in', u'off
+'], [u'meaning', u'significance']]
+0.0661378862154
+[u'still']
+[[u'but', u'yet'], [u'he'], [u'sell', u'sells', u'sold'], [u'still'], [u'informa
+tion'], [u'and'], [u'do', u'does', u'did', u'make', u'makes', u'made'], [u'erran
+ds']]
+0.0177835911948
+[[u'no'], [u'that', u'this', u'the', u'which'], [u'death', u'dissolution'], [u'h
+ave', u'has', u'had'], [u'change', u'changes', u'changed'], [u'especially'], [u'
+him'], [u'not', u'no']]
+0.0205392816271
+[[u'Willie', u'McCoy', u'was', u'is', u'yet', u'forward', u'his', u'death', u'a'
+, u'buffoon'], [u'that', u'he', u'are', u'now', u'dead', u'change', u'at it', u'
+nothing'], [u'he', u'sit', u'me', u'face to face with', u'in', u'a', u'screaming
+', u'checked', u'jacket'], [u'his', u'polyester', u'pants', u'was', u'lime green
+'], [u'the', u'quick', u'illegal', u'hair', u'have', u'clapped', u'behind', u'he
+', u'each other', u'off', u'that', u'light', u'triangular', u'vision', u'to'], [
+u'he', u'had', u'remembered', u'me', u'always', u'on', u'little', u'on', u'a', u
+'shape', u'off', u'a', u'gangster', u'coat'], [u'the', u'kind', u'the', u'sell',
+ u'information', u'errands', u'perform', u'and', u'are', u'expendable'], [u'now'
+, u'where', u'Willie', u'was', u'an', u'vampire', u'were', u'that', u'concern',
+u'with', u'the', u'expendability', u'of course', u'no', u'more', u'in', u'meanin
+g'], [u'yet', u'he', u'sell', u'still', u'information', u'and', u'makes', u'erra
+nds'], [u'no', u'which', u'dissolution', u'had', u'change', u'especially', u'him
+', u'no']]
