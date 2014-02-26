@@ -364,9 +364,6 @@ class MT:
             
     def reorderAdverbs(self, words):   
         
-        print "\n"
-        print words
-        
         # find any ADV that follows any V*
         new_words = words
         for i, word in enumerate(words):
@@ -374,7 +371,6 @@ class MT:
                 for w in words[:i]:
                     if "_V" in w:
                             
-                        print w    
                         # find the preceding VV*
                         for j, wurd in enumerate(words[:i]):
                             if "VV" in wurd: 
