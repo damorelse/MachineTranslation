@@ -61,6 +61,7 @@ class MT:
                 words = self.reorder_dependent_clause(words)
                 words = self.interpolate_phrases(words)
                 words = self.split_compounds(words)
+                words = self.recombineParticiples(words)
                 output = []
 
                 for w in words:
@@ -312,6 +313,23 @@ class MT:
             split.append(preposition + '_' + tag)
             
         return split
+        
+        
+    # follows dep clause
+    def recombineParticiples(self, words):
+        print "\n"
+        print words
+        return words
+        # find clause ends with VVPP, VAPP, VMPP. move word to pos after prec. VA*
+       
+            
+    def recombineSepPrefixes(self):
+        pass
+        # find clause that ends with PTKVZ. move word to pos prec. VVFIN
+            
+    def reorderAdverbs(self):   
+        pass
+        # find any ADV that follows any V* move to pos prec VV*
         
         
     def trainLM(self):
