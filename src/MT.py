@@ -14,7 +14,23 @@ from germanPOStagger import POStagger
 # http://www.coli.uni-saarland.de/projects/sfb378/negra-corpus/stts.asc
 from LanguageModel import LanguageModel
 
+'''
+Running strategy total:
 
+Complete:
+3pts  Language model for word selection
+1pt   Verb reordering in dependent clauses
+1pt   Verb reordering with model auxilliaries
+1pt   Verb reordering with past and future participles
+1pt   Rejoining separable prefixes
+1pt   Adverb/verb reordering
+1pt   Phrase interpolation
+
+To do:
+1pt   Reflexives
+1pt   "Zu" particle
+1pt   "Not" particle
+'''
 
 NONWORD = unicode(r'[^A-ZÄÖÜa-zäöüß_-]+', encoding='utf8')
 
