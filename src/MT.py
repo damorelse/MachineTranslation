@@ -6,7 +6,6 @@ import json
 import re
 import sys
 import os.path
-import copy
 import itertools
 from nltk.stem.snowball import SnowballStemmer
 from germanPOStagger import POStagger
@@ -79,37 +78,37 @@ class MT:
             LL = []
             for words in clauses:
                 words = self.reorder_dependent_clause(words)
-                words = self.recombineParticiples(words)
-                words = self.recombineSepPrefixes(words)
-                words = self.reorderAdverbs(words)
+                words = self.recombine_participles(words)
+                words = self.recombine_sep_prefixes(words)
+                words = self.reorder_adverbs(words)
                 words = self.interpolate_phrases(words)
                 words = self.split_compounds(words)
 
                 for w in words:
                     LL.append(self.lookup(w))
-            output = [[]]
-            for wordList in LL:
-                numPrefix = len(output)
-                numWords = len(wordList)
-                if len(wordList) > 1:
-                    tmp = [None]*(numWords*numPrefix)
-                    for i in range(numWords):
-                        for k in range(numPrefix):
-                            tmp[i*numPrefix+k] = copy.copy(output[k])
-                    output = tmp
-                for i, word in enumerate(wordList):
-                    for itr in range(numPrefix):
-                        output[i*numPrefix+itr].append(word)
-            bestScore = float("-inf")
-            index = 0
-            for i, sent in enumerate(output):
-                currScore = self.LM.score(sent)
-                if currScore > bestScore:
-                    bestScore = currScore
-                    index = i
-            print bestScore
-            engSent.append(output[index])
-#            engSent.append(LL)
+#            output = [[]]
+#            for wordList in LL:
+#                numPrefix = len(output)
+#                numWords = len(wordList)
+#                if len(wordList) > 1:
+#                    tmp = [None]*(numWords*numPrefix)
+#                    for i in range(numWords):
+#                        for k in range(numPrefix):
+#                            tmp[i*numPrefix+k] = copy.copy(output[k])
+#                    output = tmp
+#                for i, word in enumerate(wordList):
+#                    for itr in range(numPrefix):
+#                        output[i*numPrefix+itr].append(word)
+#            bestScore = float("-inf")
+#            index = 0
+#            for i, sent in enumerate(output):
+#                currScore = self.LM.score(sent)
+#                if currScore > bestScore:
+#                    bestScore = currScore
+#                    index = i
+#            print bestScore
+#            engSent.append(output[index])
+            engSent.append(LL)
 
         
         return engSent
@@ -140,7 +139,7 @@ class MT:
                     else:
                         print ("Three subjects/objects in " + str(words))
                         break
-                elif pair[-1] == 'KON':
+                elif pair[-1] == 'KON' or pair[-1] == 'KOUS' or pair[-1] == 'KOKOM':
                     first = -1
                     second = -1
                     conjunction = i
@@ -174,7 +173,7 @@ class MT:
                         else:
                             print ("Three subjects/objects in " + str(words))
                             break
-                    elif pair[-1] == 'KON':
+                    elif pair[-1] == 'KON' or pair[-1] == 'KOUS' or pair[-1] == 'KOKOM':
                         first = -1
                         second = -1
                         conjunction = i
@@ -206,7 +205,7 @@ class MT:
                             else:
                                 print ("Three subjects/objects in " + str(words))
                                 break
-                        elif pair[-1] == 'KON':
+                        elif pair[-1] == 'KON' or pair[-1] == 'KOUS' or pair[-1] == 'KOKOM':
                             first = -1
                             second = -1
                             conjunction = i
@@ -269,7 +268,7 @@ class MT:
                     phrase = ' '.join([x.split('_')[0] for x in new[i:j]])
                     
                     if phrase in self.dictionary['phrases']:
-                        new = new[:i] + ['{' + self.dictionary['phrases'][phrase] + '}_PHRASE'] + new[j:]
+                        new = new[:i] + [self.dictionary['phrases'][phrase] + '_PHRASE'] + new[j:]
                         changed = True
                         break
                         
@@ -283,11 +282,8 @@ class MT:
         
         parts = word.split('_')
         translation = [parts[0]]
-        if parts[1] == 'PHRASE':
-            # Strip braces and tag
-            translation = [word[1:-8]]
-            print translation
-        else:
+        
+        if parts[1] != 'PHRASE':
             if parts[0] in self.dictionary['words']:
                 translation = self.dictionary['words'][parts[0]]
             elif parts[0].lower() in self.dictionary['words']:
@@ -353,7 +349,7 @@ class MT:
         return split
         
         
-    def recombineParticiples(self, words):
+    def recombine_participles(self, words):
  
         # find clause that ends with VVPP, VAPP, or VMPP
         new_words = words
@@ -374,21 +370,21 @@ class MT:
         return new_words
        
 
-    def recombineSepPrefixes(self, words):
+    def recombine_sep_prefixes(self, words):
         
         # find clause ends with PTKVZ
         new_words = words
         if "_PTKVZ" in words[-1]:
-                
-                print words[-1]
-                
                 # find the preceding VVFIN
                 for i, word in enumerate(words[:-1]):
                     if "_VVFIN" in word:
             
-                        # move the last word into pos before prec. VVFIN
+                        # move the last word into pos after prec. VVFIN
                         new_words = words[:-1]
-                        new_words[i] = words[-1].split('_')[0] + words[i]
+                        new_words[i] = words[i].split('_')[0] + ' ' + words[-1].split('_')[0] + '_VVFIN'
+#                        new_words = words[:i + 1]
+#                        new_words.append(words[-1])
+#                        new_words.extend(words[i + 1:-1])
 
                         break
         
@@ -396,7 +392,7 @@ class MT:
         return new_words
 
             
-    def reorderAdverbs(self, words):   
+    def reorder_adverbs(self, words):   
         
         # find any ADV that follows any V*
         new_words = words
