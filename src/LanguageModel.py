@@ -1,21 +1,22 @@
 import math
 import collections
+import os
 
 class LanguageModel:
 
 
-  def __init__(self, corpus):
+  def __init__(self, corpus, contractions=None):
     
     self.unigramCounts = collections.defaultdict(lambda: 0)
     self.bigramCounts = collections.defaultdict(lambda: 0)
     self.trigramCounts = collections.defaultdict(lambda: 0)
     self.total = 0
     self.cont = {}
-    with open("data\contractions.txt") as f:
-      content = f.readlines()
-      for line in content:
-        line = line.rstrip()
-        self.cont[line[:line.find("\t")]] = line[line.find("\t")+1:]
+    with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'contractions.txt')) as f:
+        content = f.readlines()
+        for line in content:
+            line = line.rstrip()
+            self.cont[line[:line.find("\t")]] = line[line.find("\t")+1:]
     self.train(corpus)
 
   def train(self, corpus):

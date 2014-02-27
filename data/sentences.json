@@ -1,6 +1,27 @@
 {
     "dev":
             [
+                "Das kurze schwarze Haar hatte er sich aus dem dünnen dreieckigen Gesicht nach hinten geklatscht.",
+                "Er hatte mich schon immer ein wenig an eine Gestalt aus einem Gangsterfilm erinnert.",
+                "Aber für alle Fälle vermied ich es, ihm direkt in die Augen zu sehen.",
+                "Ich wollte ihn fragen, was sich denn änderte.",
+                "Ich wusste nicht, dass Vampire nervöse Zuckungen haben können.",
+                "Ich schaute den Vampir an, der vor mir saß, und zuckte die Achseln.",
+                "Es steht mir nicht zu, polizeiliche Angelegenheiten mit Ihnen zu besprechen.",
+                "Bert und ich würden uns zeimlich bald mal unterhalten müssen.",
+                "Er wusste wie ich über Vampire dachte, aber mein Vertrag verlangte von mir, mit jedem Klienten, der Bert einen Vorschuss gezahlt hatte, wenigstens zu reden.",
+                "Er entfernte sich von mir und drehte mir den Rücken zu."
+            ],
+    "test":
+            [
+                "Das war die vernünftigste Vorgehensweise, wenn man es mit Vampiren zu tun hatte.",
+                "Früher war er ein Schleimkübel, jetzt war er ein untoter Schleimkübel.",
+                "Das war eine neue Kategorie für mich.",
+                "Wir saßen in der klimatisierten Stille meines Büros.",
+                "Sie brauchen deswegen nicht erst zu mir zu kommen."
+            ],
+    "dev.old":
+            [
                 "Willie McCoy war schon vor seinem Tod ein Blödmann gewesen.",
                 "Dass er nun tot war, änderte daran nichts.",
                 "Er saß mir gegenüber in einem grell karierten Sakko.",
@@ -12,12 +33,17 @@
                 "Aber er verkaufte noch immer Informationen und machte Botengänge.",
                 "Nein, der Tod hatte ihn nicht besonders verändert."
             ],
-    "test":
+    "test.old":
             [
                 "Aber für alle Fälle vermied ich es, ihm direkt in die Augen zu sehen.",
-                "Das war dir vernünftigste Vorgehensweise, wenn man es mit Vampiren zu tun hatte.",
+                "Das war die vernünftigste Vorgehensweise, wenn man es mit Vampiren zu tun hatte.",
                 "Früher war er ein Schleimkübel, jetzt war er ein untoter Schleimkübel.",
                 "Das war eine neue Kategorie für mich.",
                 "Wir saßen in der klimatisierten Stille meines Büros."
+            ],
+    "unused":
+            [
+                "Sie brauchen es nicht zuzugeben.",
+                "Ich sah ihn an, knapp an den Augen vorbei."
             ]
 }

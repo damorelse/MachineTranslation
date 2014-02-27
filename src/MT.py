@@ -61,11 +61,11 @@ class MT:
             LL = []
             for words in clauses:
                 words = self.reorder_dependent_clause(words)
-                words = self.interpolate_phrases(words)
-                words = self.split_compounds(words)
                 words = self.recombineParticiples(words)
                 words = self.recombineSepPrefixes(words)
                 words = self.reorderAdverbs(words)
+                words = self.interpolate_phrases(words)
+                words = self.split_compounds(words)
 
                 for w in words:
                     LL.append(self.lookup(w))
@@ -406,7 +406,7 @@ class MT:
     def trainLM(self):
         
         # open clean text and join all lines
-        text = ''.join(open(os.path.dirname(__file__) + '/../data/AnitaBlake01GuiltyPleasures.clean.txt').read()) 
+        text = ''.join(open(os.path.join(os.path.dirname(__file__), '..', 'data', 'AnitaBlake01GuiltyPleasures.clean.txt')).read()) 
         
         # sentencify text
         sentences = re.split(r' *[.?!][\'")\]]* *[(\["]*', text)
