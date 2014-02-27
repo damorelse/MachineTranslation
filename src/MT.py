@@ -30,6 +30,8 @@ To do:
 1pt   Reflexives
 1pt   "Zu" particle
 1pt   "Not" particle
+3pts  Subject/verb agreement
+3pts  Verb tenses
 '''
 
 NONWORD = unicode(r'[^A-ZÄÖÜa-zäöüß_-]+', encoding='utf8')
@@ -107,6 +109,7 @@ class MT:
                     index = i
             print bestScore
             engSent.append(output[index])
+#            engSent.append(LL)
 
         
         return engSent
