@@ -207,7 +207,18 @@
                 "drehen": ["turn", "turns", "turned"],
                 "drehten": ["turn", "turns", "turned"],
                 "drehte": ["turn", "turns", "turned"],
-                "Rücken": ["back"]
+                "Rücken": ["back"],
+                "himmelblau": ["azure"],
+                "himmelblauen": ["azure"],
+                "Wand": ["wall"],
+                "Wände": ["wall"],
+                "Boss": ["boss"],
+                "beruhigend": ["calming", "soothing"],
+                "halten": ["stop", "stops", "stopped", "hold", "hold", "held", "keep", "keeps", "kept"],
+                "hielten": ["stop", "stops", "stopped", "hold", "hold", "held", "keep", "keeps", "kept"],
+                "hielt": ["stop", "stops", "stopped", "hold", "hold", "held", "keep", "keeps", "kept"],
+                "Raum": ["room", "area"],
+                "kalt": ["cold"]
             },
     "phrases":
             {
