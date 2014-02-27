@@ -27,11 +27,11 @@ Complete:
 1pt   Phrase interpolation
 
 To do:
+3pts  Verb tenses
 1pt   Reflexives
 1pt   "Zu" particle
 1pt   "Not" particle
 3pts  Subject/verb agreement
-3pts  Verb tenses
 '''
 
 NONWORD = unicode(r'[^A-ZÄÖÜa-zäöüß_-]+', encoding='utf8')
@@ -55,6 +55,7 @@ COMPOUND_PREPOSITIONS = {
     u'zur': [u'zu_APPR', u'der_ART']
 }
 
+VERB_PATTERN = re.compile('(..+)(?:e|st|t|en|te|test|tet|ten)')
 
 class MT:
 
@@ -77,6 +78,7 @@ class MT:
         for line in dev:
             clauses = self.split_line(line)
             LL = []
+            
             for words in clauses:
                 words = self.reorder_dependent_clause(words)
                 words = self.reorder_participles(words)
@@ -88,34 +90,48 @@ class MT:
 
                 for w in words:
                     LL.append(self.lookup(w))
-            output = [[]]
-            for wordList in LL:
-                numPrefix = len(output)
-                numWords = len(wordList)
-                if len(wordList) > 1:
-                    tmp = [None]*(numWords*numPrefix)
-                    for i in range(numWords):
-                        for k in range(numPrefix):
-                            tmp[i*numPrefix+k] = copy.copy(output[k])
-                    output = tmp
-                for i, word in enumerate(wordList):
-                    for itr in range(numPrefix):
-                        output[i*numPrefix+itr].append(word)
-            bestScore = float("-inf")
-            index = 0
-            for i, sent in enumerate(output):
-                currScore = self.LM.score(sent)
-                if currScore > bestScore:
-                    bestScore = currScore
-                    index = i
-            print bestScore
-            engSent.append(output[index])
+                    
+            engSent.append(refine_word_choice(LL))
 #            engSent.append(LL)
 
         
         return engSent
   
+  
+    def refine_word_choice(LL):
+        
+        output = [[]]
+        
+        for wordList in LL:
+            numPrefix = len(output)
+            numWords = len(wordList)
+            
+            if len(wordList) > 1:
+                tmp = [None]*(numWords*numPrefix)
+                
+                for i in range(numWords):
+                    for k in range(numPrefix):
+                        tmp[i*numPrefix+k] = copy.copy(output[k])
+                        
+                output = tmp
+            for i, word in enumerate(wordList):
+                for itr in range(numPrefix):
+                    output[i*numPrefix+itr].append(word)
+                    
+        bestScore = float("-inf")
+        index = 0
+        
+        for i, sent in enumerate(output):
+            currScore = self.LM.score(sent)
+            if currScore > bestScore:
+                bestScore = currScore
+                index = i
+                
+        print bestScore
+        
+        return output[index]
     
+        
     def reorder_dependent_clause(self, words):
         
         pairs = [x.split('_') for x in words]
@@ -292,9 +308,28 @@ class MT:
                 translation = self.dictionary['words'][parts[0]]
             elif parts[0].lower() in self.dictionary['words']:
                 translation = self.dictionary['words'][parts[0].lower()]
+            elif parts[1].startswith('V'):
+                translation = self.dictionary['words'][verb_stem(parts[0])]
+                
+        if parts[1].startswith('V'):
+            translation = set_tense(translation, get_tense(parts[0], parts[1]))
 
         return translation
 
+    def verb_stem(self, verb):
+
+        stem = verb
+        
+        m = VERB_PATTERN.match(verb)
+        
+        if m:
+            stem = m.group(1)
+        else:
+            # Must be irregular present or past (1S or 3S), but how did we
+            # not already find it in the dictionary?
+            raise("Didn't find %s in the dictionary" % verb)
+        
+        return stem
 
     def split_compounds(self, words):
         
