@@ -1,6 +1,7 @@
  #!/usr/bin/python
 # -*- coding: utf8 -*-
 
+import copy
 import codecs
 import json
 import re
@@ -78,37 +79,38 @@ class MT:
             LL = []
             for words in clauses:
                 words = self.reorder_dependent_clause(words)
-                words = self.recombine_participles(words)
+                words = self.reorder_participles(words)
+                words = self.reorder_modals(words)
                 words = self.recombine_sep_prefixes(words)
                 words = self.reorder_adverbs(words)
-                words = self.interpolate_phrases(words)
+                words = self.interpolate_idioms(words)
                 words = self.split_compounds(words)
 
                 for w in words:
                     LL.append(self.lookup(w))
-#            output = [[]]
-#            for wordList in LL:
-#                numPrefix = len(output)
-#                numWords = len(wordList)
-#                if len(wordList) > 1:
-#                    tmp = [None]*(numWords*numPrefix)
-#                    for i in range(numWords):
-#                        for k in range(numPrefix):
-#                            tmp[i*numPrefix+k] = copy.copy(output[k])
-#                    output = tmp
-#                for i, word in enumerate(wordList):
-#                    for itr in range(numPrefix):
-#                        output[i*numPrefix+itr].append(word)
-#            bestScore = float("-inf")
-#            index = 0
-#            for i, sent in enumerate(output):
-#                currScore = self.LM.score(sent)
-#                if currScore > bestScore:
-#                    bestScore = currScore
-#                    index = i
-#            print bestScore
-#            engSent.append(output[index])
-            engSent.append(LL)
+            output = [[]]
+            for wordList in LL:
+                numPrefix = len(output)
+                numWords = len(wordList)
+                if len(wordList) > 1:
+                    tmp = [None]*(numWords*numPrefix)
+                    for i in range(numWords):
+                        for k in range(numPrefix):
+                            tmp[i*numPrefix+k] = copy.copy(output[k])
+                    output = tmp
+                for i, word in enumerate(wordList):
+                    for itr in range(numPrefix):
+                        output[i*numPrefix+itr].append(word)
+            bestScore = float("-inf")
+            index = 0
+            for i, sent in enumerate(output):
+                currScore = self.LM.score(sent)
+                if currScore > bestScore:
+                    bestScore = currScore
+                    index = i
+            print bestScore
+            engSent.append(output[index])
+#            engSent.append(LL)
 
         
         return engSent
@@ -252,10 +254,9 @@ class MT:
 
     """
     Find phrases in the source sentence and replace them with idiomatic
-    translations.  The translations will be wrapped in curly braces to prevent
-    them from accidentally being retranslated later.
+    translations.
     """
-    def interpolate_phrases(self, words):
+    def interpolate_idioms(self, words):
  
         new = words
         changed = True
@@ -267,9 +268,12 @@ class MT:
                 for j in range(len(new), i + 1, -1):
                     phrase = ' '.join([x.split('_')[0] for x in new[i:j]])
                     
-                    if phrase in self.dictionary['phrases']:
-                        new = new[:i] + [self.dictionary['phrases'][phrase] + '_PHRASE'] + new[j:]
+                    if phrase in self.dictionary['idioms']:
+                        new = new[:i] + [self.dictionary['idioms'][phrase] + '_IDIOM'] + new[j:]
                         changed = True
+                        break
+                            
+                    if changed:
                         break
                         
                 if changed:
@@ -283,7 +287,7 @@ class MT:
         parts = word.split('_')
         translation = [parts[0]]
         
-        if parts[1] != 'PHRASE':
+        if parts[1] != 'IDIOM':
             if parts[0] in self.dictionary['words']:
                 translation = self.dictionary['words'][parts[0]]
             elif parts[0].lower() in self.dictionary['words']:
@@ -349,7 +353,7 @@ class MT:
         return split
         
         
-    def recombine_participles(self, words):
+    def reorder_participles(self, words):
  
         # find clause that ends with VVPP, VAPP, or VMPP
         new_words = words
@@ -360,6 +364,27 @@ class MT:
                 # find the preceding VA*
                 for i, word in enumerate(words[:-1]):
                     if "VA" in word:
+                
+                        # move last word into pos after prec. VA*
+                        new_words = words[:i+1]
+                        new_words.append(words[-1])
+                        new_words.extend(words[i+1:-1])
+                        break
+        
+        return new_words
+        
+        
+    def reorder_modals(self, words):
+ 
+        # find clause that ends with VVPP, VAPP, or VMPP
+        new_words = words
+        check = ["VVINF", "VAINF", "VMINF"]
+        for c in check:
+            if c in words[-1]:
+                
+                # find the preceding VM*
+                for i, word in enumerate(words[:-1]):
+                    if "VM" in word:
                 
                         # move last word into pos after prec. VA*
                         new_words = words[:i+1]

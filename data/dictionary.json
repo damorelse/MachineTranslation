@@ -225,11 +225,19 @@
                 "Raum": ["room", "area"],
                 "kalt": ["cold"]
             },
-    "phrases":
+    "idioms":
             {
                 "schon immer": "always",
                 "noch immer": "still",
                 "für alle Fälle": "just in case",
-                "Achseln zucken": "shrug one's shoulders"
-            }
+                "zucken (die|mit den) Achseln": "shrug one's shoulders"
+            },
+    "verb_idioms":
+            [
+                {
+                    "verb": "sein",
+                    "rest": "von Bedeutung",
+                    "translation": "matter"
+                }
+            ]
 }

@@ -4,12 +4,12 @@
                 "Das kurze schwarze Haar hatte er sich aus dem dünnen dreieckigen Gesicht nach hinten geklatscht.",
                 "Er hatte mich schon immer ein wenig an eine Gestalt aus einem Gangsterfilm erinnert.",
                 "Aber für alle Fälle vermied ich es, ihm direkt in die Augen zu sehen.",
+                "Jetzt, wo Willie ein Vampir war, war die Sache mit der Entbehrlichkeit natürlich nicht mehr von Bedeutung.",
                 "Ich wollte ihn fragen, was sich denn änderte.",
                 "Ich wusste nicht, dass Vampire nervöse Zuckungen haben können.",
                 "Ich schaute den Vampir an, der vor mir saß, und zuckte die Achseln.",
                 "Es steht mir nicht zu, polizeiliche Angelegenheiten mit Ihnen zu besprechen.",
                 "Bert und ich würden uns zeimlich bald mal unterhalten müssen.",
-                "Er wusste wie ich über Vampire dachte, aber mein Vertrag verlangte von mir, mit jedem Klienten, der Bert einen Vorschuss gezahlt hatte, wenigstens zu reden.",
                 "Er entfernte sich von mir und drehte mir den Rücken zu."
             ],
     "test":
@@ -43,6 +43,7 @@
             ],
     "unused":
             [
+                "Er wusste wie ich über Vampire dachte, aber mein Vertrag verlangte von mir, mit jedem Klienten, der Bert einen Vorschuss gezahlt hatte, wenigstens zu reden.",
                 "Sie brauchen es nicht zuzugeben.",
                 "Ich sah ihn an, knapp an den Augen vorbei.",
                 "Sie brauchen deswegen nicht erst zu mir zu kommen."
