@@ -373,24 +373,22 @@ class MT:
         
         return new_words
        
-            
-    ''' We must have some error because PTKVZ never occurs in our dev set.. '''        
+
     def recombineSepPrefixes(self, words):
         
         # find clause ends with PTKVZ
         new_words = words
-        if "PTKVZ" in words[-1]:
+        if "_PTKVZ" in words[-1]:
                 
                 print words[-1]
                 
                 # find the preceding VVFIN
                 for i, word in enumerate(words[:-1]):
-                    if "VVFIN" in word:
+                    if "_VVFIN" in word:
             
                         # move the last word into pos before prec. VVFIN
-                        new_words = words[:i-1]
-                        new_words.append(words[-1])
-                        new_words.extend(words[i-1:-1])
+                        new_words = words[:-1]
+                        new_words[i] = words[-1].split('_')[0] + words[i]
 
                         break
         
