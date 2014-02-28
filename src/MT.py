@@ -74,7 +74,7 @@ class MT:
         
         translated_sentences = []        
         sentences = self.read_json(file)
-        dev = self.tagger.tag(sentences['dev']) 
+        dev = self.tagger.tag(sentences['test']) 
 #        print dev
         for line in dev:
             clauses = self.split_line(line)
@@ -100,7 +100,18 @@ class MT:
             translated_sentences.append(translated_clauses)
 #            engSent.append(LL)
 
-        return translated_sentences
+        translation = []
+        for sentence in translated_sentences:
+            trans = ""
+            for clause in sentence:
+                clauz = ""
+                for word in clause:
+                    clauz += " "+word
+                trans += ", "+clauz  
+            translation.append(trans)      
+
+        return translation
+        #return translated_sentences
   
   
     def refine_word_choice(self, LL):
