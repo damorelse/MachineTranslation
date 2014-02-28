@@ -75,6 +75,7 @@ class MT:
         translated_sentences = []        
         sentences = self.read_json(file)
         dev = self.tagger.tag(sentences['test']) 
+        
 #        print dev
         for line in dev:
             clauses = self.split_line(line)
