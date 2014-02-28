@@ -7,6 +7,7 @@ import json
 import re
 import sys
 import os.path
+import os
 import itertools
 from nltk.stem.snowball import SnowballStemmer
 from germanPOStagger import POStagger
@@ -66,7 +67,7 @@ class MT:
         self.ngrams = self.read_json(ngrams)
         self.stemmer = SnowballStemmer("german") 
         self.tagger = POStagger() 
-        self.trainLM()
+        self.trainOnAllLM()
         
         
     def translate(self, file):
@@ -626,6 +627,43 @@ class MT:
         
         # train LM on corpus
         self.LM = LanguageModel(sentences)
+        
+    
+    def trainOnAllLM(self):
+        
+        # open clean text files for each book and join all lines
+        text = ""
+        books = ["AnitaBlake01GuiltyPleasures.clean.txt",
+        "AnitaBlake02LaughingCorpse.really.clean.txt",
+        "AnitaBlake03CircusOfTheDamned.really.clean.tx",
+        "AnitaBlake04LunaticCafe.really.clean.txt",
+        "AnitaBlake05BloodyBones.really.clean.txt",
+        "AnitaBlake06TheKillingDance.really.clean.txt",
+        "AnitaBlake07BurntOfferings.really.clean.txt",
+        "AnitaBlake08BlueMoon.really.clean.txt",
+        "AnitaBlake09ObsidianButterfly.really.clean.txt",
+        "AnitaBlake10NarcissusInChains.really.clean.txt",
+        "AnitaBlake11CeruleanSins.really.clean.txt",
+        "AnitaBlake12IncubusDreams.really.clean.txt",
+        "AnitaBlake16BloodNoir.really.clean.txt",
+        "AnitaBlake17SkinTrade.really.clean.txt",
+        "AnitaBlake18Flirt.really.clean.txt"]
+        
+        for book in books:
+            text += ''.join(open(os.path.join(os.path.dirname(__file__), '..', 'data', book)).read()) 
+        
+        # sentencify text
+        sentences = re.split(r' *[.?!][\'")\]]* *[(\["]*', text)
+        
+        # cut out the first 15 proper sentences - dev and test
+        sentences = sentences[17:]
+
+        # wordify the sentences
+        for i, sentence in enumerate(sentences):
+            sentences[i] = re.findall(r"[\w']+|[.,!?;]", sentence)
+        
+        # train LM on corpus
+        self.LM = LanguageModel(sentences)    
         
        
     def permutationTester(self, sentence):
