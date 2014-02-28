@@ -72,32 +72,35 @@ class MT:
         
     def translate(self, file):
         
-        engSent = []        
+        translated_sentences = []        
         sentences = self.read_json(file)
         dev = self.tagger.tag(sentences['dev']) 
-        print dev
+#        print dev
         for line in dev:
             clauses = self.split_line(line)
-            LL = []
+            translated_clauses = []
             
-            for words in clauses:
-                words = self.reorder_dependent_clause(words)
-                words = self.reorder_obj_subj(words)
-                words = self.reorder_participles(words)
-                words = self.reorder_modals(words)
-                words = self.recombine_sep_prefixes(words)
+            for clause in clauses:
+                LL = []
+                clause = self.reorder_dependent_clause(clause)
+                clause = self.reorder_obj_subj(clause)
+                clause = self.reorder_participles(clause)
+                clause = self.reorder_modals(clause)
+                clause = self.recombine_sep_prefixes(clause)
 #                words = self.reorder_adverbs(words)
-                words = self.interpolate_idioms(words)
-                words = self.split_compounds(words)
+                clause = self.interpolate_idioms(clause)
+                clause = self.split_compounds(clause)
 
-                for w in words:
-                    LL.append(self.lookup(w))
+                for word in clause:
+                    LL.append(self.lookup(word))
 #                    print LL[-1]
+
+                translated_clauses.append(self.refine_word_choice(LL))
                     
-            engSent.append(self.refine_word_choice(LL))
+            translated_sentences.append(translated_clauses)
 #            engSent.append(LL)
-            
-        return engSent
+
+        return translated_sentences
   
   
     def refine_word_choice(self, LL):
