@@ -136,23 +136,24 @@ class MT:
         
     def reorder_dependent_clause(self, words):
         
-        while '_V[VAM]FIN' in words[-1]:
-            pairs = [x.split('_') for x in words]
+        pairs = [x.split('_') for x in words]
+
+        if re.match('V[VAM]FIN', pairs[-1][-1]):
             changed = False
             
             """
             First look for an auxilliary verb to which to attach our end verb.
             """
-            for i in range(len(pairs) - 1, -1, -1):
-                if '_VAFIN' in pairs[i][-1]:
-                    words = words[:i + 1] + [words[-1]] + words[i + 1:-1]
-                    
-                    changed = True
-                    
-                    break
-                elif '_KON' in pairs[i][-1]:
-                    # Give up at the first conjunction
-                    break
+#            for i in range(len(pairs) - 1, -1, -1):
+#                if '_VAFIN' in pairs[i][-1]:
+#                    words = words[:i + 1] + [words[-1]] + words[i + 1:-1]
+#                    
+#                    changed = True
+#                    
+#                    break
+#                elif '_KON' in pairs[i][-1]:
+#                    # Give up at the first conjunction
+#                    break
             
             if not changed:
                 """

@@ -20,14 +20,14 @@ def main():
             i = pattern.finditer(line)
 
             for m in i:
-                sys.stdout.write(line[start:m.start()].replace('\015', ''))
+                sys.stdout.write(line[start:m.start()].replace('\015', '\n'))
                 sys.stdout.write(' ')
 
                 start = m.end()
 
-            sys.stdout.write(line[start:].replace('\015', ''))
+            sys.stdout.write(line[start:].replace('\015', '\n'))
         else:
-            sys.stdout.write(line.replace('\015', ''))
+            sys.stdout.write(line.replace('\015', '\n'))
 
 if __name__ == "__main__":
     main()
