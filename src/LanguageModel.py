@@ -92,10 +92,10 @@ class LanguageModel:
                 score += math.log(self.trigramCounts[" ".join(toks[:3])])
                 score -= math.log(self.bigramCounts[" ".join(toks[1:3])])
             elif " ".join(toks[1:3]) in self.bigramCounts:
-                score += math.log(self.bigramCounts[" ".join(toks[1:3])])
+                score += math.log(0.4) + math.log(self.bigramCounts[" ".join(toks[1:3])])
                 score -= math.log(self.unigramCounts[toks[2]])
             elif toks[2] in self.unigramCounts:
-                score += math.log(self.unigramCounts[toks[2]] + 1)
+                score += math.log(0.4) + math.log(self.unigramCounts[toks[2]] + 1)
                 score -= (self.total + V)
             else:
                 score += 0.0 #UNK?

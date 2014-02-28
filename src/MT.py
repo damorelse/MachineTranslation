@@ -96,8 +96,7 @@ class MT:
                     
             engSent.append(self.refine_word_choice(LL))
 #            engSent.append(LL)
-
-        
+            
         return engSent
   
   
