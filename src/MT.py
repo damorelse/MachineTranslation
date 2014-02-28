@@ -23,11 +23,11 @@ Complete:
 1pt   Verb reordering with model auxilliaries
 1pt   Verb reordering with past and future participles
 1pt   Rejoining separable prefixes
-1pt   Adverb/verb reordering
 1pt   Phrase interpolation
+3pts  Verb tenses
 
 To do:
-3pts  Verb tenses
+1pt   Adverb/verb reordering
 1pt   Reflexives
 1pt   "Zu" particle
 1pt   "Not" particle
@@ -55,8 +55,7 @@ COMPOUND_PREPOSITIONS = {
     u'zur': [u'zu_APPR', u'der_ART']
 }
 
-VERB_PATTERN = re.compile('(..+)(?:e|st|t|en|ete|etest|etet|eten)')
-REGULAR_PATTERN = re.compile(unicode('(..+)((et)?(e|st|t|en))?'))
+REGULAR_PATTERN = re.compile(unicode('^(..+?)((et)?(e|st|t|en|(?=<e)n))?$'))
 
 class MT:
 
@@ -82,10 +81,11 @@ class MT:
             
             for words in clauses:
                 words = self.reorder_dependent_clause(words)
+                words = self.reorder_obj_subj(words)
                 words = self.reorder_participles(words)
                 words = self.reorder_modals(words)
                 words = self.recombine_sep_prefixes(words)
-                words = self.reorder_adverbs(words)
+#                words = self.reorder_adverbs(words)
                 words = self.interpolate_idioms(words)
                 words = self.split_compounds(words)
 
@@ -136,60 +136,42 @@ class MT:
         
     def reorder_dependent_clause(self, words):
         
-        pairs = [x.split('_') for x in words]
-        
-        if re.match('V[VAM]FIN', pairs[-1][-1]):
-            """
-            Find where to put it.  Look for a pair of noun phrases or articles
-            or prepositions and put it between them.  Note that we can't cross a
-            conjuction, though.
-            """ 
-            first = -1
-            second = -1
-            conjunction = -1
+        while '_V[VAM]FIN' in words[-1]:
+            pairs = [x.split('_') for x in words]
+            changed = False
             
-            # First we assume that articles do not substitute for nouns
-            for i, pair in enumerate(pairs[:-1]):
-                if pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
-                    pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
-                    if first < 0:
-                        first = i
-                    elif second < 0:
-                        second = i
-                    else:
-                        print ("Three subjects/objects in " + str(words))
-                        break
-                elif pair[-1] == 'KON' or pair[-1] == 'KOUS' or pair[-1] == 'KOKOM':
-                    first = -1
-                    second = -1
-                    conjunction = i
+            """
+            First look for an auxilliary verb to which to attach our end verb.
+            """
+            for i in range(len(pairs) - 1, -1, -1):
+                if '_VAFIN' in pairs[i][-1]:
+                    words = words[:i + 1] + [words[-1]] + words[i + 1:-1]
                     
-            if first >= 0 and second < 0:
+                    changed = True
+                    
+                    break
+                elif '_KON' in pairs[i][-1]:
+                    # Give up at the first conjunction
+                    break
+            
+            if not changed:
+                """
+                Find where to put it.  Look for a pair of noun phrases or articles
+                or prepositions and put it between them.  Note that we can't cross a
+                conjuction, though.
+                """ 
                 first = -1
+                second = -1
                 conjunction = -1
-                first_is_article = False
-                second_is_article = False
-                
-                # An article may be substituting for the second noun.  Try again
+
+                # First we assume that articles do not substitute for nouns
                 for i, pair in enumerate(pairs[:-1]):
-                    if pair[-1] == 'ART' or pair[-1] == 'CARD':
+                    if pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or pair[-1] == 'PWS' or \
+                        pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
                         if first < 0:
                             first = i
-                            first_is_article = True
                         elif second < 0:
                             second = i
-                            second_is_article = True
-                        else:
-                            print ("Three subjects/objects in " + str(words))
-                            break
-                    elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
-                        pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
-                        if second < 0 and (first < 0 or first_is_article):
-                            first = i
-                            first_is_article = False
-                        elif second < 0 or second_is_article:
-                            second = i
-                            second_is_article = False
                         else:
                             print ("Three subjects/objects in " + str(words))
                             break
@@ -197,28 +179,30 @@ class MT:
                         first = -1
                         second = -1
                         conjunction = i
-                        
-                if second < 0:
-                    # Nope. Maybe an article is subbing for the first noun.  Try again.
+
+                if first >= 0 and second < 0:
                     first = -1
                     conjunction = -1
                     first_is_article = False
+                    second_is_article = False
 
                     # An article may be substituting for the second noun.  Try again
                     for i, pair in enumerate(pairs[:-1]):
                         if pair[-1] == 'ART' or pair[-1] == 'CARD':
                             if first < 0:
                                 first = i
+                                first_is_article = True
                             elif second < 0:
                                 second = i
                                 second_is_article = True
                             else:
                                 print ("Three subjects/objects in " + str(words))
                                 break
-                        elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or \
+                        elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or pair[-1] == 'PWS' or \
                             pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
-                            if first < 0:
+                            if second < 0 and (first < 0 or first_is_article):
                                 first = i
+                                first_is_article = False
                             elif second < 0 or second_is_article:
                                 second = i
                                 second_is_article = False
@@ -230,15 +214,47 @@ class MT:
                             second = -1
                             conjunction = i
 
-            if first < 0 and conjunction < 0:
-                # Move the verb into the first position
-                words = words[-1:] + words[:-1]
-            if first < 0:
-                # Move the verb into the first position
-                words = words[:conjunction + 1] + words[-1:] + words[conjunction + 1:-1]
-            else:
-                words = words[:first + 1] + words[-1:] + words[first + 1:-1]
-                
+                    if second < 0:
+                        # Nope. Maybe an article is subbing for the first noun.  Try again.
+                        first = -1
+                        conjunction = -1
+                        first_is_article = False
+
+                        # An article may be substituting for the second noun.  Try again
+                        for i, pair in enumerate(pairs[:-1]):
+                            if pair[-1] == 'ART' or pair[-1] == 'CARD':
+                                if first < 0:
+                                    first = i
+                                elif second < 0:
+                                    second = i
+                                    second_is_article = True
+                                else:
+                                    print ("Three subjects/objects in " + str(words))
+                                    break
+                            elif pair[-1] == 'PPER' or pair[-1] == 'PPOSS' or pair[-1] == 'PWS' or \
+                                pair[-1] == 'NN' or pair[-1] == 'NE' or pair[-1] == 'PDS':
+                                if first < 0:
+                                    first = i
+                                elif second < 0 or second_is_article:
+                                    second = i
+                                    second_is_article = False
+                                else:
+                                    print ("Three subjects/objects in " + str(words))
+                                    break
+                            elif pair[-1] == 'KON' or pair[-1] == 'KOUS' or pair[-1] == 'KOKOM':
+                                first = -1
+                                second = -1
+                                conjunction = i
+
+                if first < 0 and conjunction < 0:
+                    # Move the verb into the first position
+                    words = words[-1:] + words[:-1]
+                if first < 0:
+                    # Move the verb into the first position
+                    words = words[:conjunction + 1] + words[-1:] + words[conjunction + 1:-1]
+                else:
+                    words = words[:first + 1] + words[-1:] + words[first + 1:-1]
+
         return words
         
         
@@ -312,7 +328,6 @@ class MT:
                 translation = self.dictionary['words'][parts[0].lower()]
                 
         if parts[1].startswith('V'):
-            print translation
             translation = [self.from_tense(w, self.get_tense(parts[0], parts[1])) for w in translation]
 
         return translation
@@ -335,8 +350,6 @@ class MT:
     def from_tense(self, verb, tense):
         new = verb
         
-        print tense
-        
         if verb in self.dictionary['verbs'] and len(self.dictionary['verbs'][verb]) == 3 and tense == '1':
             new = self.dictionary['verbs'][verb][0][0]
         elif verb in self.dictionary['verbs'] and len(self.dictionary['verbs'][verb]) == 3 and tense == '2':
@@ -347,13 +360,13 @@ class MT:
             new = self.dictionary['verbs'][verb][0][3]
         elif verb in self.dictionary['verbs'] and tense == 'PP':
             new = self.dictionary['verbs'][verb][-1]
-        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense == '1P':
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == list and tense == '1P':
             new = self.dictionary['verbs'][verb][-2][0]
-        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense == '2P':
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == list and tense == '2P':
             new = self.dictionary['verbs'][verb][-2][1]
-        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense == '3P':
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == list and tense == '3P':
             new = self.dictionary['verbs'][verb][-2][2]
-        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense[-2:] == '+P':
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == list and tense[-2:] == '+P':
             new = self.dictionary['verbs'][verb][-2][3]
         elif verb in self.dictionary['verbs'] and tense[-1] == 'P':
             new = self.dictionary['verbs'][verb][-2]
@@ -363,8 +376,10 @@ class MT:
             new = verb + verb[-1] + 'ed'
         elif tense[-1] == 'P':
             new = verb + 'ed'
-        elif tense == 'I':
-            new = verb + 'ing'
+#        elif tense == 'I' and verb[-1] == 'e':
+#            new = verb[:-1] + 'ing'
+#        elif tense == 'I':
+#            new = verb + 'ing'
         elif tense == '2' and verb[-1] == 'o':
             new = verb + 'es'
         elif tense == '2':
@@ -373,9 +388,12 @@ class MT:
         return new
     
     def get_tense(self, verb, tag):
-        tense = None
+        words = verb.split(' ')
         
-        print verb, tag
+        if len(words) > 1:
+            verb = words[0]
+            
+        tense = None
         
         if tag.endswith('PP'):
             tense = 'P'
@@ -391,15 +409,27 @@ class MT:
         else:
             m = REGULAR_PATTERN.match(verb)
             
-            if m and m.group(1) in self.dictionary['tenses'][verb]:
-                tense = self.dictionary['tenses'][verb]
+            if m and m.group(1) in self.dictionary['tenses']:
+                # If it's in the dictionary, it must be strong simple past
+                tense = self.dictionary['tenses'][m.group(1)]
                 
                 if tense == 'P' and m.group(2) == 't':
-                    tense = '3P'
+                    tense = '2+P'
                 elif tense == 'P' and m.group(2) == 'st':
                     tense = '2P'
-                elif tense == 'P' and m.group(2) == 'en':
-                    tense = '1+P'
+                elif tense == 'P' and (m.group(2) == 'en' or m.group(2) == 'n'):
+                    tense = '1+P' #1st or 3rd, we don't care which
+            elif m:
+                # And now we're left with present or weak simple past
+                if m.group(2) == 'e':
+                    tense = '1'
+                elif m.group(2) == 't':
+                    # This could also be 2nd plural, in which case we'll get it wrong
+                    tense = '3'
+                elif m.group(2) == 'st':
+                    tense = '2'
+                elif m.group(2) == 'en':
+                    tense = '1+' #1st or 3rd, we don't care which
                 elif m.group(2) == 'ete':
                     tense = '1P'
                 elif m.group(2) == 'etet':
@@ -409,15 +439,10 @@ class MT:
                     tense = '2P'
                 elif m.group(2) == 'eten':
                     tense = '1+P' #1st or 3rd, we don't care which
-                elif m.group(2) == 'e':
-                    tense = '1'
-                elif m.group(2) == 't':
-                    # This could also be 2nd plural, in which case we'll get it wrong for weak verbs!
-                    tense = '3'
-                elif m.group(2) == 'st':
-                    tense = '2'
+                else:
+                    raise Exception('unexpected verb ending: %s/%s' % (m.group(1), m.group(2)))
             else:
-                raise Exception("verb doesn't match pattern: %s" % verb)
+                raise Exception("verb doesn't match pattern: %s/%s" % (verb, m.group(1)))
             
         return tense
 
@@ -503,19 +528,36 @@ class MT:
  
         # find clause that ends with VVPP, VAPP, or VMPP
         new_words = words
-        check = ["VVINF", "VAINF", "VMINF"]
+        check = ["_VVINF", "_VAINF", "_VMINF"]
+        
         for c in check:
             if c in words[-1]:
                 
                 # find the preceding VM*
                 for i, word in enumerate(words[:-1]):
-                    if "VM" in word:
+                    if "_VM" in word:
                 
                         # move last word into pos after prec. VA*
                         new_words = words[:i+1]
                         new_words.append(words[-1])
                         new_words.extend(words[i+1:-1])
                         break
+        
+        return new_words
+       
+
+    def reorder_obj_subj(self, words):
+ 
+        new_words = words
+
+        # find first verb
+        for i, word in enumerate(words[:-2]):
+            if '_V' in word:
+                # We can only be certain about ich, du, and er.
+                if words[i + 1] == 'ich_PPER' or words[i + 1] == 'du_PPER' or words[i + 1] == 'er_PPER':
+                    new_words = [words[i + 1]] + [words[i]] + words[:i] + words[i + 2:]
+                    
+                break
         
         return new_words
        
