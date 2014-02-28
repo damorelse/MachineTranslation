@@ -92,7 +92,7 @@ class MT:
 
                 for w in words:
                     LL.append(self.lookup(w))
-                    print LL[-1]
+#                    print LL[-1]
                     
             engSent.append(self.refine_word_choice(LL))
 #            engSent.append(LL)
@@ -350,6 +350,13 @@ class MT:
         return stem
     
     def from_tense(self, verb, tense):
+        words = verb.split(' ')
+        rest = []
+        
+        if len(words) > 1:
+            verb = words[0]
+            rest = words[1:]
+            
         new = verb
         
         if verb in self.dictionary['verbs'] and len(self.dictionary['verbs'][verb]) == 3 and tense == '1':
@@ -387,7 +394,7 @@ class MT:
         elif tense == '2':
             new = verb + 's'
         
-        return new
+        return ' '.join([new] + rest)
     
     def get_tense(self, verb, tag):
         words = verb.split(' ')

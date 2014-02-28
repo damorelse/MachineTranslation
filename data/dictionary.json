@@ -164,7 +164,7 @@
                 "untoter": ["undead"],
                 "verkauf": ["sell"],
                 "verlang": ["demand", "request"],
-                "vermied": ["avoid", "beware"],
+                "vermied": ["avoid"],
                 "vernünftig": ["reasonable", "sensible"],
                 "vernünftigste": ["most reasonable", "most sensible"],
                 "veränder": ["change"],
