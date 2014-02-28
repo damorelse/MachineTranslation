@@ -1,4 +1,4 @@
- #!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf8 -*-
 
 import copy
@@ -55,7 +55,8 @@ COMPOUND_PREPOSITIONS = {
     u'zur': [u'zu_APPR', u'der_ART']
 }
 
-VERB_PATTERN = re.compile('(..+)(?:e|st|t|en|te|test|tet|ten)')
+VERB_PATTERN = re.compile('(..+)(?:e|st|t|en|ete|etest|etet|eten)')
+REGULAR_PATTERN = re.compile(unicode('(..+)((et)?(e|st|t|en))?'))
 
 class MT:
 
@@ -90,15 +91,16 @@ class MT:
 
                 for w in words:
                     LL.append(self.lookup(w))
+                    print LL[-1]
                     
-            engSent.append(refine_word_choice(LL))
+            engSent.append(self.refine_word_choice(LL))
 #            engSent.append(LL)
 
         
         return engSent
   
   
-    def refine_word_choice(LL):
+    def refine_word_choice(self, LL):
         
         output = [[]]
         
@@ -308,11 +310,10 @@ class MT:
                 translation = self.dictionary['words'][parts[0]]
             elif parts[0].lower() in self.dictionary['words']:
                 translation = self.dictionary['words'][parts[0].lower()]
-            elif parts[1].startswith('V'):
-                translation = self.dictionary['words'][verb_stem(parts[0])]
                 
         if parts[1].startswith('V'):
-            translation = set_tense(translation, get_tense(parts[0], parts[1]))
+            print translation
+            translation = [self.from_tense(w, self.get_tense(parts[0], parts[1])) for w in translation]
 
         return translation
 
@@ -320,16 +321,105 @@ class MT:
 
         stem = verb
         
-        m = VERB_PATTERN.match(verb)
+        m = REGULAR_PATTERN.match(verb)
         
         if m:
             stem = m.group(1)
         else:
             # Must be irregular present or past (1S or 3S), but how did we
             # not already find it in the dictionary?
-            raise("Didn't find %s in the dictionary" % verb)
+            raise Exception("Didn't find %s in the dictionary" % verb)
         
         return stem
+    
+    def from_tense(self, verb, tense):
+        new = verb
+        
+        print tense
+        
+        if verb in self.dictionary['verbs'] and len(self.dictionary['verbs'][verb]) == 3 and tense == '1':
+            new = self.dictionary['verbs'][verb][0][0]
+        elif verb in self.dictionary['verbs'] and len(self.dictionary['verbs'][verb]) == 3 and tense == '2':
+            new = self.dictionary['verbs'][verb][0][1]
+        elif verb in self.dictionary['verbs'] and len(self.dictionary['verbs'][verb]) == 3 and tense == '3':
+            new = self.dictionary['verbs'][verb][0][2]
+        elif verb in self.dictionary['verbs'] and len(self.dictionary['verbs'][verb]) == 3 and tense[-1] == '+':
+            new = self.dictionary['verbs'][verb][0][3]
+        elif verb in self.dictionary['verbs'] and tense == 'PP':
+            new = self.dictionary['verbs'][verb][-1]
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense == '1P':
+            new = self.dictionary['verbs'][verb][-2][0]
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense == '2P':
+            new = self.dictionary['verbs'][verb][-2][1]
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense == '3P':
+            new = self.dictionary['verbs'][verb][-2][2]
+        elif verb in self.dictionary['verbs'] and type(self.dictionary['verbs'][verb][-2]) == 'list' and tense[-2:] == '+P':
+            new = self.dictionary['verbs'][verb][-2][3]
+        elif verb in self.dictionary['verbs'] and tense[-1] == 'P':
+            new = self.dictionary['verbs'][verb][-2]
+        elif tense[-1] == 'P' and verb[-1] == 'e':
+            new = verb + 'd'
+        elif tense[-1] == 'P' and re.match('.*[^aeiou][aeiou][b-df-hj-np-tvwyz]$', verb):
+            new = verb + verb[-1] + 'ed'
+        elif tense[-1] == 'P':
+            new = verb + 'ed'
+        elif tense == 'I':
+            new = verb + 'ing'
+        elif tense == '2' and verb[-1] == 'o':
+            new = verb + 'es'
+        elif tense == '2':
+            new = verb + 's'
+        
+        return new
+    
+    def get_tense(self, verb, tag):
+        tense = None
+        
+        print verb, tag
+        
+        if tag.endswith('PP'):
+            tense = 'P'
+        elif tag.endswith('INF'):
+            tense = 'I'
+        elif verb in self.dictionary['tenses']:
+            tense = self.dictionary['tenses'][verb]
+            
+            if tense == 'P':
+                tense = '1P' #1st or 3rd, we don't care which
+            elif tense == 'I':
+                tense = '1+' #1st or 3rd, we don't care which
+        else:
+            m = REGULAR_PATTERN.match(verb)
+            
+            if m and m.group(1) in self.dictionary['tenses'][verb]:
+                tense = self.dictionary['tenses'][verb]
+                
+                if tense == 'P' and m.group(2) == 't':
+                    tense = '3P'
+                elif tense == 'P' and m.group(2) == 'st':
+                    tense = '2P'
+                elif tense == 'P' and m.group(2) == 'en':
+                    tense = '1+P'
+                elif m.group(2) == 'ete':
+                    tense = '1P'
+                elif m.group(2) == 'etet':
+                    # This could also be 2nd plural, in which case we'll get it wrong for weak verbs!
+                    tense = '3P' 
+                elif m.group(2) == 'etest':
+                    tense = '2P'
+                elif m.group(2) == 'eten':
+                    tense = '1+P' #1st or 3rd, we don't care which
+                elif m.group(2) == 'e':
+                    tense = '1'
+                elif m.group(2) == 't':
+                    # This could also be 2nd plural, in which case we'll get it wrong for weak verbs!
+                    tense = '3'
+                elif m.group(2) == 'st':
+                    tense = '2'
+            else:
+                raise Exception("verb doesn't match pattern: %s" % verb)
+            
+        return tense
 
     def split_compounds(self, words):
         
