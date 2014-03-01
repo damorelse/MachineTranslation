@@ -74,7 +74,7 @@ class MT:
         
         translated_sentences = []        
         sentences = self.read_json(file)
-        dev = self.tagger.tag(sentences['dev']) 
+        dev = self.tagger.tag(sentences['test']) 
         
 #        print dev
         for line in dev:
@@ -93,6 +93,7 @@ class MT:
                 clause = self.split_compounds(clause)
 
                 for word in clause:
+                    word = word.replace('.', '')
                     LL.append(self.lookup(word))
 #                    print LL[-1]
 
